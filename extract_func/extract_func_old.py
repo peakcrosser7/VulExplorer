@@ -160,7 +160,7 @@ if __name__ == '__main__':
 
     s = time.time()
 
-    extract_funcs(g_input_dir, g_output_dir + "1", g_header_dir)
+    extract_funcs(g_input_dir, g_output_dir, g_header_dir)
 
     s = time.time() - s
     m, s = divmod(s, 60)
