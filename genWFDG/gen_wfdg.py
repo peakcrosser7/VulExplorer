@@ -7,7 +7,7 @@ import wfdg_generator
 
 DEBUG = True
 
-FILE_TYPES = ['.c', '.c#vul', '.c#fixed']
+FILE_TYPES = {'.c', '.c#vul', '.c#fixed'}
 
 g_header_dirs = ['-I/usr/local/lib/clang/9.0.0/include']
 
@@ -28,37 +28,21 @@ def get_header_dirs(header_dir: str) -> List[str]:
     return header_dirs
 
 
-def set_global_header_dirs(header_dir):
-    global g_header_dirs
-    g_header_dirs.extend(get_header_dirs(header_dir))
-
-
-def get_local_header_dirs(dirpath: str):
+def get_local_header_dirs(dirpath: str) -> list:
     header_dir = os.path.join(dirpath, 'include')
     if not os.path.exists(header_dir):
         return []
     return get_header_dirs(header_dir)
 
 
-def gen_WFDGs_by_generator(file_list: List[str], output_dir: str, dirpath: str = "", dest_func: str = "",
+def gen_WFDGs_by_generator(filepath: str, output_dir: str, header_list: List[str], dest_func: str = "",
                            sensitive_line: int = 0):
     if DEBUG:
-        print('Generate WFDGs from <%s>' % dirpath)
-    if dirpath == "" and len(file_list) > 0:
-        filename = file_list[0].split('/')[-1].strip()
-        # ast_lines = get_ast(filepath)
-        # funcs_info = get_funcs_info(filepath, ast_lines)
-        dirpath = file_list[0].rstrip('/' + filename)
-
-    header_list = ['-w']
-    header_list.extend(g_header_dirs)
-    header_list.extend(get_local_header_dirs(dirpath))
+        print('Generate WFDGs from <%s>' % filepath)
 
     config = wfdg_generator.Configuration()
     config.specify_func(dest_func, sensitive_line)
-    if DEBUG:
-        print("*****************", dirpath, "*********************")
-    wfdgs = wfdg_generator.gen_WFDGs(file_list, config, header_list)
+    wfdgs = wfdg_generator.gen_WFDGs([filepath], config, header_list)
     num = len(wfdgs)
     global g_total_wfdgs
     g_total_wfdgs += num
@@ -71,18 +55,25 @@ def gen_all_WFDGs(input_dir: str, output_dir: str, header_dir: str):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    set_global_header_dirs(header_dir)
+    header_list = ['-w']
+    header_list.extend(g_header_dirs)
+    header_list.extend(get_header_dirs(header_dir))
 
     if not os.path.isdir(input_dir):
-        gen_WFDGs_by_generator([input_dir], output_dir)
+        if correct_file_types(input_dir):
+            filename = input_dir.split('/')[-1].strip()
+            dirpath = input_dir.rstrip('/' + filename)
+            header_list.extend(get_local_header_dirs(dirpath))
+            gen_WFDGs_by_generator(input_dir, output_dir, header_list)
         return
 
     for dirpath, _, filenames in os.walk(input_dir):
-        filepaths = []
+        tmp_header_list = []
+        tmp_header_list.extend(header_list)
+        tmp_header_list.extend(get_local_header_dirs(dirpath))
         for filename in filenames:
             if correct_file_types(filename):
-                filepaths.append(os.path.join(dirpath, filename))
-        gen_WFDGs_by_generator(filepaths, output_dir, dirpath)
+                gen_WFDGs_by_generator(os.path.join(dirpath, filename), output_dir, tmp_header_list)
 
 
 if __name__ == '__main__':
