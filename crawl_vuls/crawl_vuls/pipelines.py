@@ -43,6 +43,13 @@ class CrawlVulsFilePipeline(FilesPipeline):
         file_name += '#fixed' if request.meta['is_fixed'] else '#vul'
         return os.path.join(dir_name, file_name)
 
+    def item_completed(self, results, item, info):
+        for result in results:
+            if not result[0]:
+                item['lost_file'] = True
+                break
+        return item
+
 
 class CrawlVulsListPipeline:
     def __init__(self):
@@ -53,9 +60,9 @@ class CrawlVulsListPipeline:
         self._file = open(vul_list_path, 'wb')
         self._exporter = JsonItemExporter(self._file)
         self._exporter.fields_to_export = [
-            'CVE_id', 'CWE_id', 'vul_type', 'file_paths', 'affected_vers',
+            'CVE_id', 'is_manual', 'CWE_id', 'vul_type', 'file_paths', 'affected_vers',
             'fixed_vers', 'vul_func', 'vul_desc',
-            'vul_file_urls', 'fixed_file_urls',
+            'lost_file', 'vul_file_urls', 'fixed_file_urls',
         ]
         self._exporter.start_exporting()
 

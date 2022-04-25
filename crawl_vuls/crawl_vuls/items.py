@@ -18,3 +18,5 @@ class CrawlVulsItem(scrapy.Item):
     vul_desc = scrapy.Field()
     vul_file_urls = scrapy.Field()
     fixed_file_urls = scrapy.Field()
+    lost_file = scrapy.Field()
+    is_manual = scrapy.Field()
