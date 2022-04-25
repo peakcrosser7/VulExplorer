@@ -3,6 +3,7 @@ from typing import Optional, Tuple
 
 import scrapy
 from scrapy.http import TextResponse
+from urllib import parse
 
 from crawl_vuls import config
 from crawl_vuls.items import CrawlVulsItem
@@ -70,18 +71,36 @@ class CrawlVulsSpider(scrapy.Spider):
 
         for ref_url in response.xpath('//table[@id="vulnrefstable"]/tr/td/a/@href').getall():
             if ref_url.startswith('https://git.openssl.org/gitweb/'):
-                yield scrapy.Request(url=ref_url, callback=self._parse_vul_codes,
+                yield scrapy.Request(url=ref_url, callback=self._parse_vul_git_page,
                                      cb_kwargs=dict(item=item))
+                return
 
-    def _parse_vul_codes(self, response: TextResponse, item: CrawlVulsItem):
+    def _parse_vul_git_page(self, response: TextResponse, item: CrawlVulsItem):
         file_paths = response.xpath('//table[@class="diff_tree"]/tr/td[1]/a/text()').getall()
         if not file_paths:
             return
         item['file_paths'] = file_paths
-        item['vul_file_urls'] = response.xpath(
-            '//div[@class="patchset"]/div/div[@class="diff header"]/a[1]/@href'
-        ).getall()
-        item['fixed_file_urls'] = response.xpath(
-            '//div[@class="patchset"]/div/div[@class="diff header"]/a[2]/@href'
-        ).getall()
-        yield item
+        item['vul_file_urls'] = []
+        item['fixed_file_urls'] = []
+
+        for vul_path in response.xpath(
+                '//div[@class="patchset"]/div/div[@class="diff header"]/a[1]/@href'
+        ).getall():
+            url = parse.urljoin(config.DOWNLOAD_DOMAIN, vul_path)
+            yield scrapy.Request(url=url, callback=self._parse_vul_code_file,
+                                 cb_kwargs=dict(item=item, is_fixed=False))
+        for fixed_path in response.xpath(
+                '//div[@class="patchset"]/div/div[@class="diff header"]/a[2]/@href'
+        ).getall():
+            url = parse.urljoin(config.DOWNLOAD_DOMAIN, fixed_path)
+            yield scrapy.Request(url=url, callback=self._parse_vul_code_file,
+                                 cb_kwargs=dict(item=item, is_fixed=True))
+
+    def _parse_vul_code_file(self, response: TextResponse, item: CrawlVulsItem, is_fixed: bool):
+        url = response.xpath('//div[@class="page_path"]/a[last()]/@href').get()
+        if is_fixed:
+            item['fixed_file_urls'].append(url)
+        else:
+            item['vul_file_urls'].append(url)
+        if len(item['fixed_file_urls']) == len(item['file_paths']):
+            yield item
