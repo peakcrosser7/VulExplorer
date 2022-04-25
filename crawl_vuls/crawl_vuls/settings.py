@@ -6,6 +6,7 @@
 #     https://docs.scrapy.org/en/latest/topics/settings.html
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+from crawl_vuls import config
 
 BOT_NAME = 'crawl_vuls'
 
@@ -23,6 +24,16 @@ ROBOTSTXT_OBEY = False
 COOKIES_ENABLED = True
 
 LOG_LEVEL = "WARNING"
+
+# Configure item pipelines
+# See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
+ITEM_PIPELINES = {
+   'crawl_vuls.pipelines.CrawlVulsListPipeline': 300,
+   'crawl_vuls.pipelines.CrawlVulsFilePipeline': 300,
+}
+
+FILES_STORE = config.CODE_FILE_STORE_DIR
+
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
 
@@ -62,12 +73,6 @@ LOG_LEVEL = "WARNING"
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
 #EXTENSIONS = {
 #    'scrapy.extensions.telnet.TelnetConsole': None,
-#}
-
-# Configure item pipelines
-# See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'crawl_vuls.pipelines.CrawlVulsPipeline': 300,
 #}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
