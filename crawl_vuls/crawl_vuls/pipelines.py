@@ -54,7 +54,8 @@ class CrawlVulsListPipeline:
         self._exporter = JsonItemExporter(self._file)
         self._exporter.fields_to_export = [
             'CVE_id', 'CWE_id', 'vul_type', 'file_paths', 'affected_vers',
-            'fixed_vers', 'vul_func', 'vul_desc'
+            'fixed_vers', 'vul_func', 'vul_desc',
+            'vul_file_urls', 'fixed_file_urls',
         ]
         self._exporter.start_exporting()
 

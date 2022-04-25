@@ -8,7 +8,7 @@ TARGET_URL = 'https://www.cvedetails.com/vulnerability-list.php?vendor_id=217'
 DOWNLOAD_DOMAIN = 'https://git.openssl.org'
 
 # 爬取主索引页的终止页码(0表示爬取全部页面)
-PAGE_END = 1
+PAGE_END = 2
 
 DATASET_STORE_DIR = 'data'
 
