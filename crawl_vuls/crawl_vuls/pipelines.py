@@ -63,7 +63,6 @@ class CrawlVulsListPipeline:
         self._exporter.fields_to_export = [
             'CVE_id', 'is_manual', 'CWE_id', 'vul_type', 'file_paths', 'affected_vers',
             'fixed_vers', 'vul_func', 'vul_desc',
-            'lost_file', 'vul_file_urls', 'fixed_file_urls',
         ]
         self._exporter.start_exporting()
 

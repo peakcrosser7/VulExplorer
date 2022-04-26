@@ -129,6 +129,7 @@ class CrawlVulsSpider(scrapy.Spider):
             item['fixed_file_urls'].append(url)
         else:
             item['vul_file_urls'].append(url)
-        if len(item['fixed_file_urls']) == len(item['file_paths']):
+        if len(item['fixed_file_urls']) == len(item['file_paths']) \
+                and len(item['vul_file_urls']) == len(item['file_paths']):
             print(item['CVE_id'])
             yield item
