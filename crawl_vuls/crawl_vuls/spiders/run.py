@@ -1,3 +1,4 @@
+import os.path
 import re
 from typing import Optional, Tuple, List
 
@@ -35,8 +36,9 @@ class CrawlVulsSpider(scrapy.Spider):
 
         if 0 < config.PAGE_END < page_end:
             page_end = config.PAGE_END
+        page_start = config.PAGE_START if 0 < config.PAGE_START <= page_end else 1
 
-        for i in range(1, page_end + 1):
+        for i in range(page_start, page_end + 1):
             url = self._get_target_url(i)
             yield scrapy.Request(url=url, callback=self._parse_vul_info)
 
@@ -45,7 +47,9 @@ class CrawlVulsSpider(scrapy.Spider):
             item = CrawlVulsItem()
             item['app_name'] = 'Openssl'
             item['is_manual'] = 0
-            item['lost_file'] = False
+            item['vul_file_cnt'] = 0
+            item['fixed_file_cnt'] = 0
+
             item['CVE_id'] = tr.xpath('./td[2]/a/text()').get().strip()
             item['CWE_id'] = self._getStrOrEmpty(tr.xpath('./td[3]/a/text()').get()).strip()
             item['vul_type'] = self._getStrOrEmpty(tr.xpath('./td[5]/text()').get()).split()
@@ -86,8 +90,6 @@ class CrawlVulsSpider(scrapy.Spider):
         if not file_paths:
             return
         item['file_paths'] = file_paths
-        item['vul_file_urls'] = []
-        item['fixed_file_urls'] = []
 
         if response.xpath('//table[@class="diff_tree"]/tr/td[3]/a[1]/text()').get().strip() == 'diff':
             for diff_url in response.xpath('//table[@class="diff_tree"]/tr/td[3]/a[1]/@href').getall():
@@ -123,13 +125,30 @@ class CrawlVulsSpider(scrapy.Spider):
         yield scrapy.Request(url=url, callback=self._parse_vul_code_file,
                              cb_kwargs=dict(item=item, is_fixed=True))
 
+    @staticmethod
+    def _save_codes(file_name: str, cve_id: str, codes: List[str]):
+        dir_path = os.path.join(config.CODE_FILE_STORE_DIR, cve_id)
+        if not os.path.exists(dir_path):
+            os.makedirs(dir_path)
+        file_path = os.path.join(dir_path, file_name)
+        with open(file_path, 'w') as wf:
+            for line in codes:
+                wf.write(line)
+                wf.write('\n')
+        print(cve_id, ' ', file_name)
+
     def _parse_vul_code_file(self, response: TextResponse, item: CrawlVulsItem, is_fixed: bool):
-        url = response.xpath('//div[@class="page_path"]/a[last()]/@href').get()
+        file_name = response.xpath('//div[@class="page_path"]/a[last()]/text()').get().strip()
         if is_fixed:
-            item['fixed_file_urls'].append(url)
+            file_name += '#fixed'
+            item['fixed_file_cnt'] += 1
         else:
-            item['vul_file_urls'].append(url)
-        if len(item['fixed_file_urls']) == len(item['file_paths']) \
-                and len(item['vul_file_urls']) == len(item['file_paths']):
+            file_name += '#vul'
+            item['vul_file_cnt'] += 1
+        codes = response.xpath('//div[@class="page_body"]/div[@class="pre"]/text()').getall()
+        self._save_codes(file_name, item['CVE_id'], codes)
+
+        if item['fixed_file_cnt'] == len(item['file_paths']) \
+                and item['vul_file_cnt'] == len(item['file_paths']):
             print(item['CVE_id'])
             yield item

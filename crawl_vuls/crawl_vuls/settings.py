@@ -23,13 +23,12 @@ ROBOTSTXT_OBEY = False
 
 COOKIES_ENABLED = True
 
-LOG_LEVEL = "WARNING"
+LOG_LEVEL = "ERROR"
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
    'crawl_vuls.pipelines.CrawlVulsListPipeline': 300,
-   'crawl_vuls.pipelines.CrawlVulsFilePipeline': 100,    # 权重值越小,优先级越高
 }
 
 FILES_STORE = config.CODE_FILE_STORE_DIR

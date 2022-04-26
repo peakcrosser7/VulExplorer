@@ -6,50 +6,10 @@
 
 # useful for handling different item types with a single interface
 import os.path
-from urllib import parse
 
-import scrapy
 from scrapy.exporters import JsonItemExporter
-from scrapy.http import TextResponse
-from scrapy.pipelines.files import FilesPipeline
 
 from crawl_vuls import config
-
-
-class CrawlVulsFilePipeline(FilesPipeline):
-    _target_domain = config.DOWNLOAD_DOMAIN
-
-    def get_media_requests(self, item, info):
-        i = 0
-        for url in item['vul_file_urls']:
-            yield scrapy.Request(url=parse.urljoin(self._target_domain, url), meta={
-                'CVE_id': item['CVE_id'],
-                'file_name': item['file_paths'][i].split('/')[-1],
-                'is_fixed': False
-            })
-            i += 1
-        i = 0
-        for url in item['fixed_file_urls']:
-            yield scrapy.Request(url=parse.urljoin(self._target_domain, url), meta={
-                'CVE_id': item['CVE_id'],
-                'file_name': item['file_paths'][i].split('/')[-1],
-                'is_fixed': True
-            })
-            i += 1
-
-    def file_path(self, request: TextResponse, response=None, info=None, *, item=None):
-        dir_name = request.meta['CVE_id']
-        file_name = request.meta['file_name']
-        file_name += '#fixed' if request.meta['is_fixed'] else '#vul'
-        return os.path.join(dir_name, file_name)
-
-    def item_completed(self, results, item, info):
-        if not item['lost_file']:
-            for result in results:
-                if not result[0]:
-                    item['lost_file'] = True
-                    break
-        return item
 
 
 class CrawlVulsListPipeline:
@@ -67,8 +27,7 @@ class CrawlVulsListPipeline:
         self._exporter.start_exporting()
 
     def process_item(self, item, spider):
-        if not item['lost_file']:
-            self._exporter.export_item(item)
+        self._exporter.export_item(item)
         return item
 
     def close_spider(self, spider):
