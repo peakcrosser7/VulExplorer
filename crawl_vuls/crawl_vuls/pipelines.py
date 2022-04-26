@@ -44,10 +44,11 @@ class CrawlVulsFilePipeline(FilesPipeline):
         return os.path.join(dir_name, file_name)
 
     def item_completed(self, results, item, info):
-        for result in results:
-            if not result[0]:
-                item['lost_file'] = True
-                break
+        if not item['lost_file']:
+            for result in results:
+                if not result[0]:
+                    item['lost_file'] = True
+                    break
         return item
 
 
@@ -67,7 +68,8 @@ class CrawlVulsListPipeline:
         self._exporter.start_exporting()
 
     def process_item(self, item, spider):
-        self._exporter.export_item(item)
+        if not item['lost_file']:
+            self._exporter.export_item(item)
         return item
 
     def close_spider(self, spider):

@@ -44,8 +44,8 @@ class CrawlVulsSpider(scrapy.Spider):
         for tr in response.xpath('//div[@id="searchresults"]/table/tr[@class="srrowns"]'):
             item = CrawlVulsItem()
             item['app_name'] = 'Openssl'
+            item['is_manual'] = 0
             item['lost_file'] = False
-            item['is_manual'] = False
             item['CVE_id'] = tr.xpath('./td[2]/a/text()').get().strip()
             item['CWE_id'] = self._getStrOrEmpty(tr.xpath('./td[3]/a/text()').get()).strip()
             item['vul_type'] = self._getStrOrEmpty(tr.xpath('./td[5]/text()').get()).split()
