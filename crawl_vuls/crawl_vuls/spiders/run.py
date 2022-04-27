@@ -30,6 +30,10 @@ class CrawlVulsSpider(scrapy.Spider):
                "&sha=d709ee3c0dc47c3827b5990023842398148d082b".format(page)
 
     def parse(self, response: TextResponse, **kwargs):
+        # url = "https://www.cvedetails.com/vulnerability-list/vendor_id-217/opov-1/Openssl.html"
+        # yield scrapy.Request(url=url, callback=self._parse_vul_info)
+        # return
+
         page_end = int(response.xpath(
             '//div[@class="paging"]/a[last()]/text()'
         ).get().strip())
@@ -133,18 +137,20 @@ class CrawlVulsSpider(scrapy.Spider):
         file_path = os.path.join(dir_path, file_name)
         with open(file_path, 'w') as wf:
             for line in codes:
-                wf.write(line)
+                wf.write(line.replace(u'\xa0', u' '))
                 wf.write('\n')
         print(cve_id, ' ', file_name)
 
     def _parse_vul_code_file(self, response: TextResponse, item: CrawlVulsItem, is_fixed: bool):
-        file_name = response.xpath('//div[@class="page_path"]/a[last()]/text()').get().strip()
+        file_name = ''
         if is_fixed:
-            file_name += '#fixed'
+            file_name += 'fixed#'
             item['fixed_file_cnt'] += 1
         else:
-            file_name += '#vul'
+            file_name += 'vul#'
             item['vul_file_cnt'] += 1
+        file_name += response.xpath('//div[@class="page_path"]/a[last()]/text()').get().strip()
+
         codes = response.xpath('//div[@class="page_body"]/div[@class="pre"]/text()').getall()
         self._save_codes(file_name, item['CVE_id'], codes)
 

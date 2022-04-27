@@ -7,9 +7,9 @@ TARGET_URL = 'https://www.cvedetails.com/vulnerability-list.php?vendor_id=217'
 
 DOWNLOAD_DOMAIN = 'https://git.openssl.org'
 
-PAGE_START = 2
+PAGE_START = 1
 
-PAGE_END = 3
+PAGE_END = 2
 
 DATASET_STORE_DIR = 'data'
 
