@@ -5,7 +5,7 @@ P_INFO = 'INFO '
 
 
 def plog(p_type: str, args, kwargs):
-    print('[%-5s] ' % p_type, end='')
+    print('[ %-5s ] ' % p_type, end='')
     print(*args, **kwargs)
 
 

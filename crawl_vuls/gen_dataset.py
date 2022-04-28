@@ -5,9 +5,6 @@ from crawl_vuls import config
 from dataset_handler.handler import DataHandlerFactory
 from genWFDG import gen_wfdg
 
-g_dataset_dir = '../dataset/'
-g_dataset_file_name = 'vul_data.json'
-
 g_header_dir = '/home/hhy/vd_ipt/openssl/include'
 g_app_root_dir = '/home/hhy/vd_ipt/openssl/'
 
@@ -57,7 +54,6 @@ def gen_dataset_WFDG():
             print('open VUL_LIST_FILE:% failed' % vul_list_path)
 
     json_handler = DataHandlerFactory.create_handler(DataHandlerFactory.JSON_TYPE)
-    json_handler.set_file_path(g_dataset_dir, g_dataset_file_name)
     for vul_info in vul_json:
         if vul_info['is_manual'] == 1:
             vul = gen_vul_WFDG(vul_info)
