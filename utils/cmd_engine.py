@@ -8,11 +8,10 @@ from utils.log import *
 
 
 class Cmd:
-    def __init__(self, func, args_type: list, desc: str, method=None):
+    def __init__(self, func, args_type: list, desc: str):
         self.func = func
         self.args_type = args_type
         self.desc = desc
-        self.method = method
 
 
 class CmdEngine:
@@ -22,7 +21,7 @@ class CmdEngine:
         self._logo = logo
 
         self.register_func(self._quit_cmdline, [], 'q', desc='quit cmdline')
-        self.register_func(self._show_help, [self], 'help')
+        self.register_func(self._show_help, [self], 'help', desc='show help message')
         signal.signal(signal.SIGINT, self.sigint_handler)
 
         self._run_logo_func()
@@ -51,14 +50,6 @@ class CmdEngine:
         if func.__code__.co_argcount != len(args_type):
             perr('the args_type is not match the function in label "%s"' % label)
             sys.exit()
-        # if cls._is_class_func(func):
-        #     if hasattr(args_type[0], func.__name__):
-        #         method = getattr(args_type[0], func.__name__)
-        #         cmd_dict[label] = Cmd(func, args_type, desc, method)
-        #     else:
-        #         perr('class function register fail')
-        #         sys.exit()
-        # else:
         cmd_dict[label] = Cmd(func, args_type, desc)
 
     def register_func(self, func, args_type: list, label: str, group: str = '',
@@ -90,25 +81,30 @@ class CmdEngine:
 
     @staticmethod
     def _check_param(args_type, input_args) -> Optional[list]:
-        if len(args_type) != len(input_args):
-            perr('the params of command is not right')
-            return None
-
         new_args = []
-        for t, arg in zip(args_type, input_args):
+        i = 0
+        for arg in args_type:
             try:
-                if t == int:
-                    arg = int(arg)
-                elif t == float:
-                    arg = float(arg)
-            except:
-                perr('the type of param \'%s\' is not %s' % (arg, t))
+                if arg == int:
+                    arg = int(input_args[i])
+                    i += 1
+                elif arg == float:
+                    arg = float(input_args[i])
+                    i += 1
+                elif arg is None:
+                    arg = input_args[i]
+                    i += 1
+            except IndexError:
+                perr('the count of params in command is not right')
+                return None
+            except ValueError:
+                perr('the type of param \'%s\' is not "%s"' % (input_args[i], arg.__name__))
                 return None
             new_args.append(arg)
         return new_args
 
     def run_func(self, args_str: str):
-        args = args_str.split(' ')
+        args = args_str.split()
         start = self._check_cmd(args)
         cmd: Cmd
         if start == 1:
@@ -118,24 +114,10 @@ class CmdEngine:
         else:
             return
 
-        # if self._is_class_func(cmd.func):
-        #     params = args[start + 1:]
-        #     if len(params) == 0:
-        #         cmd.method()
-        #     else:
-        #         new_args = self._check_param(cmd.args_type[1:], params)
-        #         if new_args:
-        #             cmd.method(*new_args)
-        # else:
-        # params = args[start:]
-        # if len(params) == 0:
-        #     cmd.func()
-        # else:
         args_type = cmd.args_type[1:] if self._is_class_func(cmd.func) else cmd.args_type
         new_args = self._check_param(args_type, args[start:])
         if new_args is not None:
             cmd.func(*new_args)
-
 
     @staticmethod
     def _is_class_func(func) -> bool:
