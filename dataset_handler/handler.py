@@ -1,5 +1,6 @@
 import json
 import os.path
+from typing import Set
 
 import global_config
 from utils.log import pwarn
@@ -18,9 +19,15 @@ class DatasetHandler:
     def show_dataset(self):
         pass
 
+    def check_dataset(self, checked_set: Set[int]) -> bool:
+        pass
+
 
 class JsonDatasetHandler(DatasetHandler):
-    _FILE_PATH = os.path.join(global_config.DATASET_DIR, global_config.DATASET_FILE_NAME)
+    DATASET_FILE_NAME = 'vul_data.json'
+    CHECKED_DATASET_NAME = 'checked_vul.json'
+    _FILE_PATH = os.path.join(global_config.DATASET_DIR, DATASET_FILE_NAME)
+    _CHECK_PATH = os.path.join(global_config.DATASET_DIR, CHECKED_DATASET_NAME)
 
     def __init__(self):
         self._json_list = []
@@ -54,15 +61,25 @@ class JsonDatasetHandler(DatasetHandler):
         self._index += 1
 
     def finish_dataset(self):
-        with open(self._FILE_PATH, 'w') as wf:
-            json.dump(self._json_list, wf)
+        self._write_dataset(self._FILE_PATH, self._json_list)
+
+    @staticmethod
+    def _try_read_dataset(file_path: str):
+        try:
+            with open(file_path, 'r') as rf:
+                return json.load(rf)
+        except:
+            pwarn('dataset not found, path: %s', file_path)
+            return None
+
+    @staticmethod
+    def _write_dataset(file_path: str, dataset: list):
+        with open(file_path, 'w') as wf:
+            json.dump(dataset, wf)
 
     def show_dataset(self):
-        try:
-            with open(self._FILE_PATH, 'r') as rf:
-                json_obj = json.load(rf)
-        except:
-            pwarn('dataset not found, path: %s', self._FILE_PATH)
+        json_obj = self._try_read_dataset(self._FILE_PATH)
+        if not json_obj:
             return
 
         print(' %-3s | %-7s | %-12s | %-25s | %-30s | %-30s | %-9s | %-15s | %-50s | %-50s'
@@ -81,6 +98,21 @@ class JsonDatasetHandler(DatasetHandler):
             print(' %-50s  ' % vul['affected_vers'], end='')
             print(' %-50s  ' % vul['fixed_vers'], end='')
             print('')
+
+    def check_dataset(self, checked_set: Set[int]) -> bool:
+        json_data = self._try_read_dataset(self._FILE_PATH)
+        if not json_data:
+            return False
+        checked_data = []
+        for i in range(len(json_data)):
+            vul = json_data[i]
+            if vul['id'] in checked_set:
+                json_data[i]['checked'] = True
+                checked_data.append(vul)
+        self._write_dataset(self._FILE_PATH, json_data)
+        self._write_dataset(self._CHECK_PATH, checked_data)
+        return True
+
 
 
 class DataHandlerFactory:
