@@ -54,7 +54,7 @@ class CrawlVulsSpider(scrapy.Spider):
             item['vul_file_cnt'] = 0
             item['fixed_file_cnt'] = 0
 
-            item['CVE_id'] = tr.xpath('./td[2]/a/text()').get().strip()
+            item['CVE_id'] = tr.xpath('./td[2]/a/text()').get().strip().lstrip('CVE-')
             item['CWE_id'] = self._getStrOrEmpty(tr.xpath('./td[3]/a/text()').get()).strip()
             item['vul_type'] = self._getStrOrEmpty(tr.xpath('./td[5]/text()').get()).split()
             url = 'https://www.cvedetails.com' + tr.xpath('./td[2]/a/@href').get()

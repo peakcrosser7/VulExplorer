@@ -2,8 +2,8 @@ import json
 import os
 
 from crawl_vuls import config
+from dataset_handler.handler import DataHandlerFactory
 from genWFDG import gen_wfdg
-from dataset_builder.builder import DataBuilderFactory,JsonDatasetBuilder
 
 g_dataset_dir = '../dataset/'
 g_dataset_file_name = 'vul_data.json'
@@ -33,18 +33,16 @@ def gen_vul_WFDG(vul_info: dict) -> dict:
     print(filepath, header_list, vul_func, vul_info['sensitive_line'])
     wfdgs = gen_wfdg.gen_WFDGs_by_generator(filepath, header_list, dest_func=vul_func,
                                             sensitive_line=vul_info['sensitive_line'])
-    s = wfdgs[0].to_json()
-    print(s)
-    vul_info['vul_wfdg'] = json.loads(s)
+    vul_info['vul_wfdg'] = wfdgs[0].to_json()
 
     wfdgs = gen_wfdg.gen_WFDGs_by_generator(filepath, header_list, dest_func=vul_func,
                                             not_use_sensitive=True)
-    vul_info['vul_wfdg_no_sen'] = json.loads(wfdgs[0].to_json())
+    vul_info['vul_wfdg_no_sen'] = wfdgs[0].to_json()
 
     filepath = os.path.join(dir_path, 'fixed#' + file_name)
     wfdgs = gen_wfdg.gen_WFDGs_by_generator(filepath, header_list, dest_func=vul_func,
                                             not_use_sensitive=True)
-    vul_info['fixed_wfdg'] = json.loads(wfdgs[0].to_json())
+    vul_info['fixed_wfdg'] = wfdgs[0].to_json()
     return vul_info
 
 
@@ -58,17 +56,18 @@ def gen_dataset_WFDG():
         except:
             print('open VUL_LIST_FILE:% failed' % vul_list_path)
 
-    json_builder = DataBuilderFactory.create_builder(DataBuilderFactory.JSON_TYPE)
-    json_builder.set_file_path(g_dataset_dir, g_dataset_file_name)
+    json_handler = DataHandlerFactory.create_handler(DataHandlerFactory.JSON_TYPE)
+    json_handler.set_file_path(g_dataset_dir, g_dataset_file_name)
     for vul_info in vul_json:
         if vul_info['is_manual'] == 1:
             vul = gen_vul_WFDG(vul_info)
-            json_builder.add_to_dataset(
+            json_handler.add_to_dataset(
                 vul['CVE_id'], vul['file_paths'], vul['vul_func'][0],
                 vul['sensitive_line'], vul['keywords'],
                 vul['vul_wfdg'], vul['vul_wfdg_no_sen'], vul['fixed_wfdg'],
                 vul['affected_vers'], vul['fixed_vers'], vul['vul_type']
             )
+    json_handler.finish_dataset()
 
 
 if __name__ == '__main__':
