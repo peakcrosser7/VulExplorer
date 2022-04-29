@@ -21,6 +21,9 @@ class DatasetHandler:
     def check_dataset(self, checked_set: Set[int]) -> bool:
         pass
 
+    def get_dataset(self, *args):
+        pass
+
 
 class JsonDatasetHandler(DatasetHandler):
     DATASET_FILE_NAME = 'vul_data.json'
@@ -41,7 +44,6 @@ class JsonDatasetHandler(DatasetHandler):
                 return
         self._file_path = os.path.join(dataset_dir, self.DATASET_FILE_NAME)
         self._check_path = os.path.join(dataset_dir, self.CHECKED_DATASET_NAME)
-        pinfo('set dataset dir to path: %s' % dataset_dir)
 
     def add_to_dataset(self, CVE_id: str, file_paths: list,
                        vul_func: str, sensitive_line: int, keywords: list,
@@ -132,6 +134,9 @@ class JsonDatasetHandler(DatasetHandler):
         self._write_dataset(self._file_path, json_data)
         self._write_dataset(self._check_path, checked_data)
         return True
+
+    def get_dataset(self, *args):
+        return self._try_read_dataset(self._check_path)
 
 
 class DataHandlerFactory:
