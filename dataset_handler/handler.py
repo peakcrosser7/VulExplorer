@@ -104,11 +104,16 @@ class JsonDatasetHandler(DatasetHandler):
         if not json_data:
             return False
         checked_data = []
+        for idx in checked_set:
+            if idx >= len(json_data):
+                pwarn('"%s" is out of range in dataset' % idx)
         for i in range(len(json_data)):
             vul = json_data[i]
             if vul['id'] in checked_set:
                 json_data[i]['checked'] = True
                 checked_data.append(vul)
+            else:
+                vul['checked'] = False
         self._write_dataset(self._FILE_PATH, json_data)
         self._write_dataset(self._CHECK_PATH, checked_data)
         return True
