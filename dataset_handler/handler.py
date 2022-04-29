@@ -2,8 +2,7 @@ import json
 import os.path
 from typing import Set
 
-import global_config
-from utils.log import pwarn
+from utils.log import *
 
 
 class DatasetHandler:
@@ -26,13 +25,23 @@ class DatasetHandler:
 class JsonDatasetHandler(DatasetHandler):
     DATASET_FILE_NAME = 'vul_data.json'
     CHECKED_DATASET_NAME = 'checked_vul.json'
-    _FILE_PATH = os.path.join(global_config.DATASET_DIR, DATASET_FILE_NAME)
-    _CHECK_PATH = os.path.join(global_config.DATASET_DIR, CHECKED_DATASET_NAME)
 
     def __init__(self):
         self._json_list = []
         self._index = 0
         self._file_path = ''
+        self._check_path = ''
+
+    def set_dataset_dir(self, dataset_dir: str):
+        if not os.path.exists(dataset_dir):
+            try:
+                os.makedirs(dataset_dir)
+            except:
+                perr('dataset dir: %s can not be created' % dataset_dir)
+                return
+        self._file_path = os.path.join(dataset_dir, self.DATASET_FILE_NAME)
+        self._check_path = os.path.join(dataset_dir, self.CHECKED_DATASET_NAME)
+        pinfo('set dataset dir to path: %s' % dataset_dir)
 
     def add_to_dataset(self, CVE_id: str, file_paths: list,
                        vul_func: str, sensitive_line: int, keywords: list,
@@ -58,10 +67,13 @@ class JsonDatasetHandler(DatasetHandler):
             'vul_type': vul_type
         }
         self._json_list.append(json_obj)
+        pinfo('append a data CVE_id:"%s" in dataset, id:%s' % (CVE_id, self._index))
         self._index += 1
 
     def finish_dataset(self):
-        self._write_dataset(self._FILE_PATH, self._json_list)
+        self._write_dataset(self._file_path, self._json_list)
+        self._write_dataset(self._check_path, [])
+        pinfo('commit all data in dataset')
 
     @staticmethod
     def _try_read_dataset(file_path: str):
@@ -74,15 +86,18 @@ class JsonDatasetHandler(DatasetHandler):
 
     @staticmethod
     def _write_dataset(file_path: str, dataset: list):
-        with open(file_path, 'w') as wf:
-            json.dump(dataset, wf)
+        try:
+            with open(file_path, 'w') as wf:
+                json.dump(dataset, wf)
+        except Exception as e:
+            perr(e)
 
     def show_dataset(self):
-        json_obj = self._try_read_dataset(self._FILE_PATH)
+        json_obj = self._try_read_dataset(self._file_path)
         if not json_obj:
             return
 
-        print(' %-3s | %-7s | %-12s | %-25s | %-30s | %-30s | %-9s | %-15s | %-50s | %-50s'
+        print(' %-3s | %-7s | %-12s | %-25s | %-30s | %-30s | %-9s | %-20s | %-60s | %-50s'
               % ('id', 'checked', 'CVE id', 'vul type', 'file paths', 'vul func', 'sensitive',
                  'keywords', 'affected versions', 'fixed versions'))
         for vul in json_obj:
@@ -94,13 +109,13 @@ class JsonDatasetHandler(DatasetHandler):
             print(' %-30s  ' % vul['file_paths'], end='')
             print(' %-30s  ' % vul['vul_func'], end='')
             print(' %-9s  ' % vul['sensitive_line'], end='')
-            print(' %-15s  ' % vul['keywords'], end='')
-            print(' %-50s  ' % vul['affected_vers'], end='')
+            print(' %-20s  ' % vul['keywords'], end='')
+            print(' %-60s  ' % vul['affected_vers'], end='')
             print(' %-50s  ' % vul['fixed_vers'], end='')
             print('')
 
     def check_dataset(self, checked_set: Set[int]) -> bool:
-        json_data = self._try_read_dataset(self._FILE_PATH)
+        json_data = self._try_read_dataset(self._file_path)
         if not json_data:
             return False
         checked_data = []
@@ -114,10 +129,9 @@ class JsonDatasetHandler(DatasetHandler):
                 checked_data.append(vul)
             else:
                 vul['checked'] = False
-        self._write_dataset(self._FILE_PATH, json_data)
-        self._write_dataset(self._CHECK_PATH, checked_data)
+        self._write_dataset(self._file_path, json_data)
+        self._write_dataset(self._check_path, checked_data)
         return True
-
 
 
 class DataHandlerFactory:

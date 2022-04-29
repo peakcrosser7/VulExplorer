@@ -43,6 +43,7 @@ def main():
     cmd_engine = CmdEngine('VulExplorer')
     cmd_engine.register_func(tester, [int, int], 'test', desc='run test')
     json_handler = DataHandlerFactory.create_handler(DataHandlerFactory.JSON_TYPE)
+    json_handler.set_dataset_dir(global_config.DATASET_DIR)
     cmd_engine.register_group('dataset')
     cmd_engine.register_func(json_handler.show_dataset, [], 'show', group='dataset',
                              desc='show all vuls in dataset')
