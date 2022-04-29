@@ -31,7 +31,7 @@ def check_dataset(checked_str: str, handler: DatasetHandler):
                 checked_set.add(int(checked_it))
         except:
             perr('input args is not right')
-            sys.exit()
+            return
 
     if handler.check_dataset(checked_set):
         pinfo('check dataset successfully')
@@ -44,9 +44,9 @@ def main():
     cmd_engine.register_func(tester, [int, int], 'test', desc='run test')
     json_handler = DataHandlerFactory.create_handler(DataHandlerFactory.JSON_TYPE)
     cmd_engine.register_group('dataset')
-    cmd_engine.register_func(json_handler.show_dataset, [json_handler], 'show', group='dataset',
+    cmd_engine.register_func(json_handler.show_dataset, [], 'show', group='dataset',
                              desc='show all vuls in dataset')
-    cmd_engine.register_func(check_dataset, [None, json_handler], 'checked', 'dataset',
+    cmd_engine.register_func(check_dataset, [None, json_handler], 'check', 'dataset',
                              desc='checked dataset to compare')
     while True:
         ipt = input('>> ')

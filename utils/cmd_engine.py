@@ -19,9 +19,13 @@ class CmdEngine:
         self._default: Dict[str, Cmd] = {}
         self._group: Dict[str, Dict[str, Cmd]] = {}
         self._logo = logo
+        self._trans_types = {
+            int: int,
+            float: float,
+        }
 
         self.register_func(self._quit_cmdline, [], 'q', desc='quit cmdline')
-        self.register_func(self._show_help, [self], 'help', desc='show help message')
+        self.register_func(self._show_help, [], 'help', desc='show help message')
         signal.signal(signal.SIGINT, self.sigint_handler)
 
         self._run_logo_func()
@@ -29,6 +33,9 @@ class CmdEngine:
     def _run_logo_func(self):
         if self._logo:
             print(self._logo)
+
+    def add_trans_type(self, trans_type, trans_func):
+        self._trans_types[trans_type] = trans_func
 
     @staticmethod
     def sigint_handler(signum, frame):
@@ -47,7 +54,10 @@ class CmdEngine:
     @classmethod
     def _register_func(cls, cmd_dict: Dict[str, Cmd], func, args_type: list, label: str,
                        desc: str = ''):
-        if func.__code__.co_argcount != len(args_type):
+        arg_cnt = func.__code__.co_argcount
+        if cls._is_class_func(func):
+            arg_cnt -= 1
+        if arg_cnt != len(args_type):
             perr('the args_type is not match the function in label "%s"' % label)
             sys.exit()
         cmd_dict[label] = Cmd(func, args_type, desc)
@@ -64,6 +74,8 @@ class CmdEngine:
         self._register_func(self._group[group], func, args_type, label, desc)
 
     def _check_cmd(self, args) -> int:
+        if len(args) == 0:
+            return 0
         cmd = args[0]
         if cmd == '':
             return 0
@@ -79,17 +91,13 @@ class CmdEngine:
         perr('command not exist, you can use \'help\' to see all commands')
         return 0
 
-    @staticmethod
-    def _check_param(args_type, input_args) -> Optional[list]:
+    def _check_param(self, args_type, input_args) -> Optional[list]:
         new_args = []
         i = 0
         for arg in args_type:
             try:
-                if arg == int:
-                    arg = int(input_args[i])
-                    i += 1
-                elif arg == float:
-                    arg = float(input_args[i])
+                if arg in self._trans_types:
+                    arg = self._trans_types[arg](input_args[i])
                     i += 1
                 elif arg is None:
                     arg = input_args[i]
@@ -97,9 +105,10 @@ class CmdEngine:
             except IndexError:
                 perr('the count of params in command is not right')
                 return None
-            except ValueError:
+            except:
                 perr('the type of param \'%s\' is not "%s"' % (input_args[i], arg.__name__))
                 return None
+
             new_args.append(arg)
         return new_args
 
@@ -114,8 +123,7 @@ class CmdEngine:
         else:
             return
 
-        args_type = cmd.args_type[1:] if self._is_class_func(cmd.func) else cmd.args_type
-        new_args = self._check_param(args_type, args[start:])
+        new_args = self._check_param(cmd.args_type, args[start:])
         if new_args is not None:
             cmd.func(*new_args)
 
@@ -123,17 +131,18 @@ class CmdEngine:
     def _is_class_func(func) -> bool:
         return isinstance(func, types.MethodType)
 
-    @classmethod
-    def _show_cmd(cls, label, cmd: Cmd):
+    def _show_cmd(self, label, cmd: Cmd):
         sio = io.StringIO()
         sio.write('    ')
         sio.write(label)
         sio.write('  ')
-        i = 1 if cls._is_class_func(cmd.func) else 0
-        for i in range(i, len(cmd.args_type)):
-            sio.write('<')
-            sio.write(cmd.func.__code__.co_varnames[i])
-            sio.write('> ')
+        i = 1 if self._is_class_func(cmd.func) else 0
+        for arg in cmd.args_type:
+            if arg is None or arg in self._trans_types:
+                sio.write('<')
+                sio.write(cmd.func.__code__.co_varnames[i])
+                sio.write('> ')
+            i += 1
         print('%-35s - %s' % (sio.getvalue(), cmd.desc))
 
     def _show_help(self):
