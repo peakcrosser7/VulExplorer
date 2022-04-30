@@ -2,7 +2,7 @@ import io
 import signal
 import sys
 import types
-from typing import Dict, Optional
+from typing import Dict, Optional, List
 
 from utils.log import *
 
@@ -112,8 +112,7 @@ class CmdEngine:
             new_args.append(arg)
         return new_args
 
-    def run_func(self, args_str: str):
-        args = args_str.split()
+    def run_func(self, args: List[str]):
         start = self._check_cmd(args)
         cmd: Cmd
         if start == 1:

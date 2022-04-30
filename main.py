@@ -1,4 +1,5 @@
 import os.path
+import sys
 import time
 
 import global_config
@@ -6,6 +7,8 @@ from cmpWFDG import detect
 from dataset_handler.handler import DataHandlerFactory, DatasetHandler
 from utils.cmd_engine import CmdEngine
 from utils.log import *
+from utils import my_time
+from genWFDG import gen_wfdg
 
 
 def init():
@@ -38,23 +41,40 @@ def check_dataset(checked_str: str, handler: DatasetHandler):
         pinfo('check dataset successfully')
 
 
-def get_time_str(timestamp: float):
-    m, s = divmod(timestamp, 60)
-    h, m = divmod(m, 60)
-    return '%02d:%02d:%02d' % (h, m, s)
-
-
 def detect_vuls(handler: DatasetHandler):
-    dataset = handler.get_dataset()
-    if not dataset:
+    ds = handler.get_checked_dataset()
+    if not ds:
         return
+    dataset = []
+    keywords = set()
+    # try:
+    for data in ds:
+        vul_wfdg = gen_wfdg.gen_WFDG_by_json(data['vul_wfdg'])
+        if not vul_wfdg:
+            return
+        fixed_wfdg = gen_wfdg.gen_WFDG_by_json(data['fixed_wfdg'])
+        if not fixed_wfdg:
+            return
+        vul = {
+            'CVE_id': data['CVE_id'],
+            'vul_wfdg': vul_wfdg,
+            'fixed_wfdg': fixed_wfdg
+        }
+        dataset.append(vul)
+        for key in data['keywords']:
+            keywords.add(key)
+    # except:
+    #     perr('load dataset failed')
+    #     return
+    pinfo('load dataset successfully')
+
     start_time = time.time()
     pinfo('start vulnerability detection at %s, detection path: %s, head path: %s'
-          % (get_time_str(start_time), global_config.DETECT_PATH, global_config.HEAD_PATH))
-    detect.detect_by_cmp(global_config.DETECT_PATH, global_config.HEAD_PATH, dataset)
+          % (my_time.get_time_str(start_time), global_config.DETECT_PATH, global_config.HEAD_PATH))
+    detect.detect_by_cmp(global_config.DETECT_PATH, global_config.HEAD_PATH, dataset, keywords)
     end_time = time.time()
-    pinfo('end vulnerability detection at %s' % get_time_str(end_time))
-    pinfo('detection cost time: %s' % get_time_str(end_time - start_time))
+    pinfo('end vulnerability detection at %s' % my_time.get_time_str(end_time))
+    pinfo('detection cost time: %s' % my_time.get_time_interval(end_time - start_time))
 
 
 def show_config():
@@ -102,10 +122,16 @@ def main():
     cmd_engine.register_group('config')
     cmd_engine.register_func(show_config, [], 'show', group='config', desc='show all configurations')
     cmd_engine.register_func(set_config, [None, None], 'set', group='config', desc='set config item a new value')
+    cmd_engine.register_func(detect_vuls, [json_handler], 'detect', desc='start vulnerability detection')
+
+    if len(sys.argv) > 1:
+        cmd_engine.run_func(sys.argv[1:])
+        return
 
     while True:
         ipt = input('>> ')
-        cmd_engine.run_func(ipt)
+        args = ipt.split()
+        cmd_engine.run_func(args)
 
 
 if __name__ == '__main__':

@@ -21,7 +21,7 @@ class DatasetHandler:
     def check_dataset(self, checked_set: Set[int]) -> bool:
         pass
 
-    def get_dataset(self, *args):
+    def get_checked_dataset(self, *args):
         pass
 
 
@@ -135,7 +135,7 @@ class JsonDatasetHandler(DatasetHandler):
         self._write_dataset(self._check_path, checked_data)
         return True
 
-    def get_dataset(self, *args):
+    def get_checked_dataset(self, *args):
         return self._try_read_dataset(self._check_path)
 
 

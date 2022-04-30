@@ -3,37 +3,9 @@ from typing import List, Dict, Set
 
 import lapjv
 import numpy
+from genWFDG.wfdg_generator import WFDG
 
 USE_WEIGHT = True
-
-
-class WFDG:
-    class WFDGNode:
-        def __init__(self):
-            self.stmt_vec = list()
-            self.weight = 0.
-
-    def __init__(self):
-        self._nodes = {0: self.WFDGNode()}
-        self._edges = set()
-        self._edges.add([1, 1])
-        for i in range(1, 5):
-            self._nodes[i] = self.WFDGNode()
-
-    def get_node_cnt(self) -> int:
-        return len(self._nodes)
-
-    def get_node(self, node_id) -> WFDGNode:
-        return self._nodes[node_id]
-
-    def get_nodes(self) -> Dict[int, WFDGNode]:
-        return self._nodes
-
-    def get_all_edges(self) -> Set[List[int]]:
-        return self._edges
-
-    def get_all_edge_cnt(self) -> int:
-        return len(self._edges)
 
 
 def node_ecul_sim(v1, v2) -> float:
@@ -87,7 +59,7 @@ def get_edge_weight(g: WFDG, edge) -> float:
 
 
 def resolve_linear_assign(cost_matrix: List[List[float]]) -> float:
-    r, c = lapjv.lapjv(cost_matrix)
+    r, c, _ = lapjv.lapjv(cost_matrix)
     cost = 0.
     for i in range(len(r)):
         cost += cost_matrix[r[i]][c[i]]
@@ -129,7 +101,7 @@ def graph_node_distance(g1: WFDG, g2: WFDG) -> float:
 def graph_edge_distance(g1: WFDG, g2: WFDG) -> float:
     MAX_VALUE = 100.
 
-    min_len = max(g1.get_all_edge_cnt(), g2.get_all_edge_cnt())
+    min_len = min(g1.get_all_edge_cnt(), g2.get_all_edge_cnt())
     if min_len == 0:
         return 0.
     matrix_len = max(g1.get_all_edge_cnt(), g2.get_all_edge_cnt())
