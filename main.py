@@ -11,15 +11,6 @@ from utils import my_time
 from genWFDG import gen_wfdg
 
 
-def init():
-    global_config.DATASET_DIR = os.path.abspath(global_config.DATASET_DIR)
-
-
-def tester(s: int, n: int):
-    for i in range(s, n):
-        print(i)
-
-
 def check_dataset(checked_str: str, handler: DatasetHandler):
     checked_set = set()
     checked_list = checked_str.split(',')
@@ -88,7 +79,6 @@ def detect_vuls(handler: DatasetHandler):
         print('No vulnerabilities were found.')
 
 
-
 def show_config():
     settings = dir(global_config)
     print('\t%-25s | %s' % ('Item', 'Value'))
@@ -121,7 +111,6 @@ def set_config(config_item: str, new_value: str):
 
 def main():
     cmd_engine = CmdEngine('VulExplorer')
-    cmd_engine.register_func(tester, [int, int], 'test', desc='run test')
 
     json_handler = DataHandlerFactory.create_handler(DataHandlerFactory.JSON_TYPE)
     json_handler.set_dataset_dir(global_config.DATASET_DIR)
