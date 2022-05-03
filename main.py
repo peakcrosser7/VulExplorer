@@ -47,34 +47,46 @@ def detect_vuls(handler: DatasetHandler):
         return
     dataset = []
     keywords = set()
-    # try:
-    for data in ds:
-        vul_wfdg = gen_wfdg.gen_WFDG_by_json(data['vul_wfdg'])
-        if not vul_wfdg:
-            return
-        fixed_wfdg = gen_wfdg.gen_WFDG_by_json(data['fixed_wfdg'])
-        if not fixed_wfdg:
-            return
-        vul = {
-            'CVE_id': data['CVE_id'],
-            'vul_wfdg': vul_wfdg,
-            'fixed_wfdg': fixed_wfdg
-        }
-        dataset.append(vul)
-        for key in data['keywords']:
-            keywords.add(key)
-    # except:
-    #     perr('load dataset failed')
-    #     return
+    try:
+        for data in ds:
+            vul_wfdg = gen_wfdg.gen_WFDG_by_json(data['vul_wfdg'])
+            if not vul_wfdg:
+                return
+            fixed_wfdg = gen_wfdg.gen_WFDG_by_json(data['fixed_wfdg'])
+            if not fixed_wfdg:
+                return
+            vul = {
+                'CVE_id': data['CVE_id'],
+                'vul_wfdg': vul_wfdg,
+                'fixed_wfdg': fixed_wfdg
+            }
+            dataset.append(vul)
+            for key in data['keywords']:
+                keywords.add(key)
+    except:
+        perr('load dataset failed')
+        return
     pinfo('load dataset successfully')
 
     start_time = time.time()
     pinfo('start vulnerability detection at %s, detection path: %s, head path: %s'
           % (my_time.get_time_str(start_time), global_config.DETECT_PATH, global_config.HEAD_PATH))
-    detect.detect_by_cmp(global_config.DETECT_PATH, global_config.HEAD_PATH, dataset, keywords)
+    vul_result = detect.detect_by_cmp(global_config.DETECT_PATH, global_config.HEAD_PATH, dataset, keywords)
     end_time = time.time()
     pinfo('end vulnerability detection at %s' % my_time.get_time_str(end_time))
-    pinfo('detection cost time: %s' % my_time.get_time_interval(end_time - start_time))
+    print('\nVulnerability Detection Result:')
+    print('start time: %s    end time: %s    cost time: %s' %
+          (my_time.get_time_str(start_time), my_time.get_time_str(end_time),
+           my_time.get_time_interval(end_time - start_time)))
+    if vul_result:
+        print('found vulnerabilities:')
+        print(' %-45s | %-30s | %-15s' % ('        file path', '       function name', 'CVE_id'))
+        for res in vul_result:
+            print(' %-45s   %-30s   %-15s' %
+                  (res['file_path'], res['func_name'], res['CVE_id']))
+    else:
+        print('No vulnerabilities were found.')
+
 
 
 def show_config():
