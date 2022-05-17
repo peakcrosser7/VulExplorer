@@ -4,6 +4,7 @@ from typing import List, Set
 import global_config
 from cmpWFDG import cmp_wfdg
 from genWFDG import gen_wfdg
+from genWFDG import config_trans
 from utils import my_time
 from utils.log import *
 
@@ -78,7 +79,7 @@ def cmp_with_dataset(file_path: str, wfdgs: list, dataset: list):
     return vul_result
 
 
-def detect_by_cmp(input_path: str, head_path: str, dataset: list, keywords: Set[str] = None):
+def detect_by_cmp(input_path: str, head_path: str, dataset: list, config_tran: config_trans.ConfigTrans = None):
     if not os.path.exists(input_path):
         perr('input path:%s does not exist' % input_path)
         return None
@@ -95,7 +96,7 @@ def detect_by_cmp(input_path: str, head_path: str, dataset: list, keywords: Set[
             filename = input_path.split('/')[-1].strip()
             dirpath = input_path.rstrip('/' + filename)
             header_list.extend(get_header_dirs(dirpath, head_path))
-            wfdgs = gen_wfdg.gen_WFDGs_by_generator(input_path, header_list, keywords=keywords)
+            wfdgs = gen_wfdg.gen_WFDGs_by_generator(input_path, header_list, config_tran=config_tran)
             return cmp_with_dataset(input_path, wfdgs, dataset)
 
     vul_result = []
@@ -109,7 +110,7 @@ def detect_by_cmp(input_path: str, head_path: str, dataset: list, keywords: Set[
             if correct_file_types(filename):
                 file_path = os.path.join(dirpath, filename)
                 wfdgs = gen_wfdg.gen_WFDGs_by_generator(file_path, tmp_header_list,
-                                                        keywords=keywords)
+                                                        config_tran=config_tran)
                 vul_result.extend(cmp_with_dataset(file_path, wfdgs, dataset))
     return vul_result
 
