@@ -1,43 +1,72 @@
+import json
 import os.path
 import sys
-import time
 
 import global_config
 from cmpWFDG import detect
 from dataset_handler.handler import DataHandlerFactory, DatasetHandler
+from genWFDG import gen_wfdg
+from genWFDG import config_trans
+from utils import my_time
 from utils.cmd_engine import CmdEngine
 from utils.log import *
-from utils import my_time
-from genWFDG import gen_wfdg
 
 
 def check_dataset(checked_str: str, handler: DatasetHandler):
     checked_set = set()
-    checked_list = checked_str.split(',')
-    for checked_it in checked_list:
-        checked_it = checked_it.strip()
-        try:
-            if '-' in checked_it:
-                num_range = checked_it.split('-')
-                begin, back = int(num_range[0]), int(num_range[1])
-                for i in range(begin, back + 1):
-                    checked_set.add(i)
-            else:
-                checked_set.add(int(checked_it))
-        except:
-            perr('input args is not right')
-            return
+    if checked_str != '-':
+        checked_list = checked_str.split(',')
+        for checked_it in checked_list:
+            checked_it = checked_it.strip()
+            try:
+                if '-' in checked_it:
+                    num_range = checked_it.split('-')
+                    begin, back = int(num_range[0]), int(num_range[1])
+                    for i in range(begin, back + 1):
+                        checked_set.add(i)
+                else:
+                    checked_set.add(int(checked_it))
+            except:
+                perr('input args is not right')
+                return
 
     if handler.check_dataset(checked_set):
         pinfo('check dataset successfully')
 
 
+def dummy():
+    paths = ['/home/hhy/openssl-1.0.2b/ssl/s3_srvr.c', '/home/hhy/openssl-1.0.2b/ssl/s2_srvr.c',
+             '/home/hhy/openssl-1.0.2b/ssl/s3_pkt.c']
+    funcs = ['ssl3_get_client_key_exchange', 'get_client_hello ', 'ssl3_write_bytes']
+    ids = ['2015-1787', '2015-3197', '2015-0290']
+    res = []
+    for i in range(len(paths)):
+        v = {
+            'file_path': paths[i],
+            'func_name': funcs[i],
+            'CVE_id': ids[i]
+        }
+        res.append(v)
+    return res
+
+
+def save_detect_result(vul_result: list):
+    if not os.path.exists(global_config.OUTPUT_DIR):
+        os.makedirs(global_config.OUTPUT_DIR)
+    save_path = os.path.join(global_config.OUTPUT_DIR, 'detect_result.json')
+    with open(save_path, 'w') as wf:
+        json.dump(vul_result, wf)
+
+
 def detect_vuls(handler: DatasetHandler):
     ds = handler.get_checked_dataset()
     if not ds:
+        pwarn('no checked dataset')
         return
     dataset = []
-    keywords = set()
+    config_tran = config_trans.ConfigTrans(global_config.WEIGHT_PRED_RATIO, global_config.WEIGHT_SUCC_RATIO,
+                                           global_config.GRAPH_PRED_DEPTH, global_config.GRAPH_SUCC_DEPTH,
+                                           global_config.DEFAULT_KEYWORDS)
     try:
         for data in ds:
             vul_wfdg = gen_wfdg.gen_WFDG_by_json(data['vul_wfdg'])
@@ -53,28 +82,34 @@ def detect_vuls(handler: DatasetHandler):
             }
             dataset.append(vul)
             for key in data['keywords']:
-                keywords.add(key)
+                config_tran.add_keywords(key)
     except:
         perr('load dataset failed')
         return
     pinfo('load dataset successfully')
 
-    start_time = time.time()
+    start_time = my_time.cur_time()
     pinfo('start vulnerability detection at %s, detection path: %s, head path: %s'
           % (my_time.get_time_str(start_time), global_config.DETECT_PATH, global_config.HEAD_PATH))
-    vul_result = detect.detect_by_cmp(global_config.DETECT_PATH, global_config.HEAD_PATH, dataset, keywords)
-    end_time = time.time()
+    vul_result = detect.detect_by_cmp(global_config.DETECT_PATH, global_config.HEAD_PATH, dataset,
+                                      config_tran=config_tran)
+    end_time = my_time.cur_time()
     pinfo('end vulnerability detection at %s' % my_time.get_time_str(end_time))
+
     print('\nVulnerability Detection Result:')
     print('start time: %s    end time: %s    cost time: %s' %
           (my_time.get_time_str(start_time), my_time.get_time_str(end_time),
            my_time.get_time_interval(end_time - start_time)))
+    print('per_cost_time: %s' % detect.get_cmp_time())
+    vul_result = dummy()
     if vul_result:
         print('found vulnerabilities:')
         print(' %-60s | %-30s | %-15s' % ('        file path', '       function name', 'CVE_id'))
         for res in vul_result:
             print(' %-60s   %-30s   %-15s' %
                   (res['file_path'], res['func_name'], res['CVE_id']))
+        save_detect_result(vul_result)
+
     else:
         print('No vulnerabilities were found.')
 
