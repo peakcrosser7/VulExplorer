@@ -71,9 +71,9 @@ def detect_vuls(handler: DatasetHandler):
            my_time.get_time_interval(end_time - start_time)))
     if vul_result:
         print('found vulnerabilities:')
-        print(' %-45s | %-30s | %-15s' % ('        file path', '       function name', 'CVE_id'))
+        print(' %-60s | %-30s | %-15s' % ('        file path', '       function name', 'CVE_id'))
         for res in vul_result:
-            print(' %-45s   %-30s   %-15s' %
+            print(' %-60s   %-30s   %-15s' %
                   (res['file_path'], res['func_name'], res['CVE_id']))
     else:
         print('No vulnerabilities were found.')
@@ -110,7 +110,7 @@ def set_config(config_item: str, new_value: str):
 
 
 def main():
-    cmd_engine = CmdEngine('VulExplorer')
+    cmd_engine = CmdEngine('VulExplorer v1.0.0 - Graph-based Vulnerability Detection System')
 
     json_handler = DataHandlerFactory.create_handler(DataHandlerFactory.JSON_TYPE)
     json_handler.set_dataset_dir(global_config.DATASET_DIR)

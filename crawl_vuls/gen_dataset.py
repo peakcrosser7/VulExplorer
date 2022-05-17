@@ -63,7 +63,9 @@ def gen_dataset_WFDG():
             json_handler.add_to_dataset(
                 vul['CVE_id'], vul['file_paths'], vul['vul_func'][0],
                 vul['sensitive_line'], vul['keywords'],
-                vul['vul_wfdg'], vul['vul_wfdg_no_sen'], vul['fixed_wfdg'],
+                vul['vul_wfdg'],
+                vul['vul_wfdg_no_sen'],
+                vul['fixed_wfdg'],
                 vul['affected_vers'], vul['fixed_vers'], vul['vul_type']
             )
     json_handler.finish_dataset()

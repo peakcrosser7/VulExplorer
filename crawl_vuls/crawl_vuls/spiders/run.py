@@ -8,6 +8,7 @@ from urllib import parse
 
 from crawl_vuls import config
 from crawl_vuls.items import CrawlVulsItem
+from utils.log import pinfo
 
 
 class CrawlVulsSpider(scrapy.Spider):
@@ -33,6 +34,7 @@ class CrawlVulsSpider(scrapy.Spider):
         # url = "https://www.cvedetails.com/vulnerability-list/vendor_id-217/opov-1/Openssl.html"
         # yield scrapy.Request(url=url, callback=self._parse_vul_info)
         # return
+        pinfo('start crawl vul dataset from url: %s' % config.TARGET_URL)
 
         page_end = int(response.xpath(
             '//div[@class="paging"]/a[last()]/text()'
@@ -139,7 +141,7 @@ class CrawlVulsSpider(scrapy.Spider):
             for line in codes:
                 wf.write(line.replace(u'\xa0', u' '))
                 wf.write('\n')
-        print(cve_id, ' ', file_name)
+        # print(cve_id, ' ', file_name)
 
     def _parse_vul_code_file(self, response: TextResponse, item: CrawlVulsItem, is_fixed: bool):
         file_name = ''
@@ -156,5 +158,5 @@ class CrawlVulsSpider(scrapy.Spider):
 
         if item['fixed_file_cnt'] == len(item['file_paths']) \
                 and item['vul_file_cnt'] == len(item['file_paths']):
-            print(item['CVE_id'])
+            pinfo('crawled a vulnerability: %s' % 'CVE-' + item['CVE_id'])
             yield item

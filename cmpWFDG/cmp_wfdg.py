@@ -9,7 +9,7 @@ USE_WEIGHT = True
 
 
 def node_ecul_sim(v1, v2) -> float:
-    # Use eculidean value to compute the similarity of two nodes
+    # Use euclidean value to compute the similarity of two nodes
     v1 = numpy.array(v1)
     v2 = numpy.array(v2)
     v1_norm = numpy.linalg.norm(v1)  # sqrt(x_1^2+x_2^2+...+x_n^2)
@@ -22,19 +22,19 @@ def node_ecul_sim(v1, v2) -> float:
     return 1.0 - float(dis) / (v1_norm * v2_norm)
 
 
-def node_cos_sim(vector1, vector2) -> float:
+def node_cos_sim(v1, v2) -> float:
     # Use cos value to compute the similarity of two nodes
     dot_product = 0.
-    normA = 0.
-    normB = 0.
-    for a, b in zip(vector1, vector2):
+    norm_a = 0.
+    norm_b = 0.
+    for a, b in zip(v1, v2):
         dot_product += a * b
-        normA += a ** 2
-        normB += b ** 2
-    if normA == 0.0 or normB == 0.0:
+        norm_a += a ** 2
+        norm_b += b ** 2
+    if norm_a == 0.0 or norm_b == 0.0:
         return 0.
     else:
-        return dot_product / ((normA * normB) ** 0.5)
+        return dot_product / ((norm_a * norm_b) ** 0.5)
 
 
 def calc_node_cost(stmt_vec1: list, stmt_vec2: list) -> float:
