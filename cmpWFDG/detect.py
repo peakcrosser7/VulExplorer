@@ -1,5 +1,4 @@
 import os.path
-import time
 from typing import List, Set
 
 import global_config
@@ -57,14 +56,14 @@ def cmp_with_dataset(file_path: str, wfdgs: list, dataset: list):
         for wfdg in wfdgs:
             if wfdg.get_func_name() in checked_funcs:
                 continue
-            s = time.time()
+            s = my_time.cur_time()
             sim = cmp_wfdg.compare_wfdg(wfdg, vul_info['vul_wfdg'])
-            g_cost_time += time.time() - s
+            g_cost_time += my_time.cur_time() - s
             g_wfdgs_cnt += 1
             if sim > global_config.VUL_THRESHOLD:
-                s = time.time()
+                s = my_time.cur_time()
                 p_sim = cmp_wfdg.compare_wfdg(wfdg, vul_info['fixed_wfdg'])
-                g_cost_time += time.time() - s
+                g_cost_time += my_time.cur_time() - s
                 g_wfdgs_cnt += 1
                 if sim > p_sim:
                     vul = {
@@ -124,11 +123,11 @@ def get_cmp_time() -> float:
 if __name__ == '__main__':
     g_input_dir = global_config.DETECT_PATH
     g_header_dir = global_config.HEAD_PATH
-    start_time = time.time()
+    start_time = my_time.cur_time()
     pinfo('start vulnerability detection at %s, detection path: %s, head path: %s'
           % (my_time.get_time_str(start_time), global_config.DETECT_PATH, global_config.HEAD_PATH))
     detect_by_cmp(g_input_dir, g_header_dir, [])
-    end_time = time.time()
+    end_time = my_time.cur_time()
     pinfo('end vulnerability detection at %s' % my_time.get_time_str(end_time))
     print('start time: %s    end time: %s    cost time: %s' %
           (my_time.get_time_str(start_time), my_time.get_time_str(end_time),

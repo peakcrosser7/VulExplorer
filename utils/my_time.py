@@ -1,6 +1,10 @@
 import time
 
 
+def cur_time() -> float:
+    return time.time()
+
+
 def get_time_str(timestamp: float) -> str:
     return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(timestamp))
 
