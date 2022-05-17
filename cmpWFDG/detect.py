@@ -32,12 +32,15 @@ def get_header_dirs(dir_path: str, head_path: str) -> List[str]:
     if head_path:
         head_path = head_path.rstrip('/')
         dir_path = dir_path.rstrip('/')
-        tail = dir_path.split('/')[-1]
-        dir_path = dir_path.rstrip('/' + tail)
-        while dir_path != head_path:
-            header_list.append(dir_path)
+        if dir_path != head_path:
             tail = dir_path.split('/')[-1]
             dir_path = dir_path.rstrip('/' + tail)
+            i = 0
+            while dir_path != head_path and i < 5:
+                header_list.append(dir_path)
+                tail = dir_path.split('/')[-1]
+                dir_path = dir_path.rstrip('/' + tail)
+                i += 1
     return header_list
 
 
