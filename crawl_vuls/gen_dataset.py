@@ -4,26 +4,28 @@ import os
 from crawl_vuls import config
 from dataset_handler.handler import DataHandlerFactory
 from genWFDG import gen_wfdg
+from cmpWFDG import detect
+from utils.log import perr
 
 g_dataset_dir = '../dataset/'
 
-g_header_dir = '/home/hhy/vd_ipt/openssl/include'
-g_app_root_dir = '/home/hhy/vd_ipt/openssl/'
+g_header_dir = '/home/hhy/openssl-1.0.1a/'
+g_app_root_dir = '/home/hhy/openssl-1.0.1a/'
 
-g_header_list = gen_wfdg.get_header_dirs(g_header_dir)
-g_header_list.extend(gen_wfdg.g_header_dirs)
+g_header_list = ['-w', '-I/usr/local/lib/clang/9.0.0/include']
+g_header_list.extend(detect.get_header_dirs(g_header_dir, ''))
 
 
 def gen_vul_WFDG(vul_info: dict) -> dict:
     file_name = vul_info['file_paths'][0].split('/')[-1]
-    if not gen_wfdg.correct_file_types(file_name):
+    if not detect.correct_file_types(file_name):
         return {}
 
     header_list = []
     header_list.extend(g_header_list)
     dir_path = os.path.join(g_app_root_dir, vul_info['file_paths'][0].rstrip(file_name))
     # print(dir_path)
-    header_list.extend(gen_wfdg.get_local_header_dirs(dir_path))
+    header_list.extend(detect.get_header_dirs(dir_path, g_header_dir))
 
     vul_func = vul_info['vul_func'][0]
     dir_path = os.path.join(config.CODE_FILE_STORE_DIR, vul_info['CVE_id'])
@@ -34,9 +36,10 @@ def gen_vul_WFDG(vul_info: dict) -> dict:
                                             sensitive_line=vul_info['sensitive_line'])
     vul_info['vul_wfdg'] = wfdgs[0].to_json()
 
-    wfdgs = gen_wfdg.gen_WFDGs_by_generator(filepath, header_list, dest_func=vul_func,
-                                            not_use_sensitive=True)
-    vul_info['vul_wfdg_no_sen'] = wfdgs[0].to_json()
+    # wfdgs = gen_wfdg.gen_WFDGs_by_generator(filepath, header_list, dest_func=vul_func,
+    #                                         not_use_sensitive=True)
+    # vul_info['vul_wfdg_no_sen'] = wfdgs[0].to_json()
+    vul_info['vul_wfdg_no_sen'] = ''
 
     filepath = os.path.join(dir_path, 'fixed#' + file_name)
     wfdgs = gen_wfdg.gen_WFDGs_by_generator(filepath, header_list, dest_func=vul_func,
@@ -53,7 +56,7 @@ def gen_dataset_WFDG():
             with open(vul_list_path, 'r') as rf:
                 vul_json.extend(json.load(rf))
         except:
-            print('open VUL_LIST_FILE:% failed' % vul_list_path)
+            perr('open VUL_LIST_FILE:% failed' % vul_list_path)
 
     json_handler = DataHandlerFactory.create_handler(DataHandlerFactory.JSON_TYPE)
     json_handler.set_dataset_dir(g_dataset_dir)
