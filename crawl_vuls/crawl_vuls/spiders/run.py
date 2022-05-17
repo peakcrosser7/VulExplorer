@@ -24,11 +24,16 @@ class CrawlVulsSpider(scrapy.Spider):
         return string if string else ""
 
     @staticmethod
-    def _get_target_url(page: int) -> str:
-        return "https://www.cvedetails.com/vulnerability-list.php?vendor_id=217&product_id=&version_id=&page={}" \
-               "&hasexp=0&opdos=0&opec=0&opov=0&opcsrf=0&opgpriv=0&opsqli=0&opxss=0&opdirt=0&opmemc=0&ophttprs=0" \
-               "&opbyp=0&opfileinc=0&opginf=0&cvssscoremin=0&cvssscoremax=0&year=0&month=0&cweid=0&order=1&trc=209" \
-               "&sha=d709ee3c0dc47c3827b5990023842398148d082b".format(page)
+    def _get_target_url(target_url: str, page: int) -> str:
+        if target_url == 'https://www.cvedetails.com/vulnerability-list.php?vendor_id=217':
+            return "https://www.cvedetails.com/vulnerability-list.php?vendor_id=217&product_id=&version_id=&page={}" \
+                   "&hasexp=0&opdos=0&opec=0&opov=0&opcsrf=0&opgpriv=0&opsqli=0&opxss=0&opdirt=0&opmemc=0&ophttprs=0" \
+                   "&opbyp=0&opfileinc=0&opginf=0&cvssscoremin=0&cvssscoremax=0&year=0&month=0&cweid=0&order=1&trc=209" \
+                   "&sha=d709ee3c0dc47c3827b5990023842398148d082b".format(page)
+        return 'https://www.cvedetails.com/vulnerability-list.php?vendor_id=217&product_id=383&version_id=465603' \
+               '&page={}&hasexp=0&opdos=0&opec=0&opov=0&opcsrf=0&opgpriv=0&opsqli=0&opxss=0&opdirt=0&opmemc=0' \
+               '&ophttprs=0&opbyp=0&opfileinc=0&opginf=0&cvssscoremin=0&cvssscoremax=0&year=0&month=0&cweid=0' \
+               '&order=1&trc=69&sha=1d7cf8e188974f43c6579c4556ff85f5d9b797ae'.format(page)
 
     def parse(self, response: TextResponse, **kwargs):
         # url = "https://www.cvedetails.com/vulnerability-list/vendor_id-217/opov-1/Openssl.html"
@@ -45,7 +50,7 @@ class CrawlVulsSpider(scrapy.Spider):
         page_start = config.PAGE_START if 0 < config.PAGE_START <= page_end else 1
 
         for i in range(page_start, page_end + 1):
-            url = self._get_target_url(i)
+            url = self._get_target_url(config.TARGET_URL, i)
             yield scrapy.Request(url=url, callback=self._parse_vul_info)
 
     def _parse_vul_info(self, response: TextResponse):
