@@ -52,30 +52,32 @@ def cmp_with_dataset(file_path: str, wfdgs: list, dataset: list):
     global g_cost_time, g_wfdgs_cnt
     vul_result = []
     pinfo('compare <%s> with vul dataset...' % file_path)
-    for vul_info in dataset:
+    for vul_dict in dataset:
         checked_funcs = set()
         for wfdg in wfdgs:
             if wfdg.get_func_name() in checked_funcs:
                 continue
-            s = my_time.cur_time()
-            sim = cmp_wfdg.compare_wfdg(wfdg, vul_info['vul_wfdg'])
-            g_cost_time += my_time.cur_time() - s
-            g_wfdgs_cnt += 1
-            if sim > global_config.VUL_THRESHOLD:
+            for v_g, f_g in zip(vul_dict['vul_wfdg'], vul_dict['fixed_wfdg']):
                 s = my_time.cur_time()
-                p_sim = cmp_wfdg.compare_wfdg(wfdg, vul_info['fixed_wfdg'])
+                sim = cmp_wfdg.compare_wfdg(wfdg, v_g)
                 g_cost_time += my_time.cur_time() - s
                 g_wfdgs_cnt += 1
-                if sim > p_sim:
-                    vul = {
-                        'CVE_id': vul_info['CVE_id'],
-                        'file_path': file_path,
-                        'func_name': wfdg.get_func_name()
-                    }
-                    checked_funcs.add(wfdg.get_func_name())
-                    vul_result.append(vul)
-                    pinfo('find vul(CVE_id: %s) in path:%s func:%s' %
-                          (vul['CVE_id'], file_path, vul['func_name']))
+                if sim > global_config.VUL_THRESHOLD:
+                    s = my_time.cur_time()
+                    p_sim = cmp_wfdg.compare_wfdg(wfdg, f_g)
+                    g_cost_time += my_time.cur_time() - s
+                    g_wfdgs_cnt += 1
+                    if sim > p_sim:
+                        vul = {
+                            'CVE_id': vul_dict['CVE_id'],
+                            'file_path': file_path,
+                            'func_name': wfdg.get_func_name()
+                        }
+                        checked_funcs.add(wfdg.get_func_name())
+                        vul_result.append(vul)
+                        pinfo('find vul(CVE_id: %s) in path:%s func:%s' %
+                              (vul['CVE_id'], file_path, vul['func_name']))
+                        break
     return vul_result
 
 

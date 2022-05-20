@@ -1,14 +1,13 @@
 import json
 import os.path
-from typing import Set
+from typing import Set, List
 
 from utils.log import *
 
 
 class DatasetHandler:
-    def add_to_dataset(self, CVE_id: str, file_paths: list,
-                       vul_func: str, sensitive_line: int, keywords: list,
-                       vul_wfdg: str, vul_wfdg_no_sen: str, fixed_wfdg: str,
+    def add_to_dataset(self, CVE_id: str, vul_info: list, keywords: list,
+                       vul_wfdg: List[str], vul_wfdg_no_sen: List[str], fixed_wfdg: List[str],
                        affected_vers=None, fixed_vers=None, vul_type: str = ""):
         pass
 
@@ -45,9 +44,8 @@ class JsonDatasetHandler(DatasetHandler):
         self._file_path = os.path.join(dataset_dir, self.DATASET_FILE_NAME)
         self._check_path = os.path.join(dataset_dir, self.CHECKED_DATASET_NAME)
 
-    def add_to_dataset(self, CVE_id: str, file_paths: list,
-                       vul_func: str, sensitive_line: int, keywords: list,
-                       vul_wfdg: str, vul_wfdg_no_sen: str, fixed_wfdg: str,
+    def add_to_dataset(self, CVE_id: str, vul_info: list, keywords: list,
+                       vul_wfdg: List[str], vul_wfdg_no_sen: List[str], fixed_wfdg: List[str],
                        affected_vers=None, fixed_vers=None, vul_type: str = ""):
         if not affected_vers:
             affected_vers = []
@@ -57,9 +55,7 @@ class JsonDatasetHandler(DatasetHandler):
             'id': self._index,
             'checked': False,
             'CVE_id': CVE_id,
-            'file_paths': file_paths,
-            'vul_func': vul_func,
-            'sensitive_line': sensitive_line,
+            'vul_info': vul_info,
             'keywords': keywords,
             'vul_wfdg': vul_wfdg,
             'vul_wfdg_no_sen': vul_wfdg_no_sen,
@@ -108,9 +104,9 @@ class JsonDatasetHandler(DatasetHandler):
             print(' %-7s  ' % checked, end='')
             print(' %-12s  ' % vul['CVE_id'], end='')
             print(' %-25s  ' % vul['vul_type'], end='')
-            print(' %-30s  ' % vul['file_paths'], end='')
-            print(' %-30s  ' % vul['vul_func'], end='')
-            print(' %-9s  ' % vul['sensitive_line'], end='')
+            print(' %-30s  ' % vul['vul_info'][0]['file_path'], end='')
+            print(' %-30s  ' % vul['vul_info'][0]['funcs'][0][0], end='')
+            print(' %-9s  ' % vul['vul_info'][0]['funcs'][0][1], end='')
             print(' %-20s  ' % vul['keywords'], end='')
             print(' %-60s  ' % vul['affected_vers'], end='')
             print(' %-50s  ' % vul['fixed_vers'], end='')

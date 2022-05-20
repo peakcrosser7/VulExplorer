@@ -16,7 +16,9 @@ class CrawlVulsSpider(scrapy.Spider):
     allowed_domains = config.TARGET_DOMAINS  # 限定爬取域名列表
     start_urls = [config.TARGET_URL]  # 爬取URL列表
 
-    _vers_pattern = re.compile(r'Fixed in OpenSSL (\d\.\d\.\d[a-z]*)\s+\(Affected ([\da-z.\-,]+)\)')
+    # _vers_pattern = re.compile(r'Fixed in OpenSSL (\d\.\d\.\d[a-z]*)\s+\(Affected ([\da-z.\-,]+)\)')
+    _vers_pattern = re.compile(r'(\d\.\d\.\d+) before (\d\.\d\.\d+[a-z]*)')
+    _vers_pattern1 = re.compile(r'OpenSSL before (\d\.\d\.\d+[a-z]*)')
     _func_pattern = re.compile(r'(\w+)\(?\)?\s+function\b')
 
     @staticmethod
@@ -57,6 +59,8 @@ class CrawlVulsSpider(scrapy.Spider):
         for tr in response.xpath('//div[@id="searchresults"]/table/tr[@class="srrowns"]'):
             item = CrawlVulsItem()
             item['app_name'] = 'Openssl'
+            item['vul_info'] = []
+            item['keywords'] = []
             item['is_manual'] = 0
             item['vul_file_cnt'] = 0
             item['fixed_file_cnt'] = 0
@@ -70,11 +74,20 @@ class CrawlVulsSpider(scrapy.Spider):
 
     @classmethod
     def _get_vul_vers(cls, vul_desc: str) -> Tuple[list, list]:
-        res_it = cls._vers_pattern.finditer(vul_desc)
         fixed_vers, affected_vers = [], []
+        res_it = cls._vers_pattern1.search(vul_desc)
+        if res_it:
+            fixed_vers.append(res_it.group(1))
+            affected_vers.append('before ' + res_it.group(1))
+
+        res_it = cls._vers_pattern.finditer(vul_desc)
         for res in res_it:
-            fixed_vers.append(res.group(1))
-            affected_vers.append(res.group(2))
+            if 'a' <= res.group(2)[-1] <= 'z':
+                fixed_vers.append(res.group(2))
+                s = list(res.group(2))
+                s[-1] = chr(ord(s[-1]) - 1)
+                affected_vers.append(res.group(1) + "-" + "".join(s))
+
         return fixed_vers, affected_vers
 
     @classmethod
@@ -89,7 +102,7 @@ class CrawlVulsSpider(scrapy.Spider):
         desc = response.xpath('//div[@class="cvedetailssummary"]/text()').get().strip()
         item['vul_desc'] = desc
         item['fixed_vers'], item['affected_vers'] = self._get_vul_vers(desc)
-        item['vul_func'] = self._get_vul_func(desc)
+        # item['vul_func'] = self._get_vul_func(desc)
         for ref_url in response.xpath('//table[@id="vulnrefstable"]/tr/td/a/@href').getall():
             if ref_url.startswith('https://git.openssl.org/'):
                 yield scrapy.Request(url=ref_url, callback=self._parse_vul_git_page,
@@ -100,7 +113,9 @@ class CrawlVulsSpider(scrapy.Spider):
         file_paths = response.xpath('//table[@class="diff_tree"]/tr/td[1]/a/text()').getall()
         if not file_paths:
             return
-        item['file_paths'] = file_paths
+        for path in file_paths:
+            vul_dict = {'file_path': path, 'funcs': []}
+            item['vul_info'].append(vul_dict)
 
         if response.xpath('//table[@class="diff_tree"]/tr/td[3]/a[1]/text()').get().strip() == 'diff':
             for diff_url in response.xpath('//table[@class="diff_tree"]/tr/td[3]/a[1]/@href').getall():
@@ -161,7 +176,7 @@ class CrawlVulsSpider(scrapy.Spider):
         codes = response.xpath('//div[@class="page_body"]/div[@class="pre"]/text()').getall()
         self._save_codes(file_name, item['CVE_id'], codes)
 
-        if item['fixed_file_cnt'] == len(item['file_paths']) \
-                and item['vul_file_cnt'] == len(item['file_paths']):
+        if item['fixed_file_cnt'] == len(item['vul_info']) \
+                and item['vul_file_cnt'] == len(item['vul_info']):
             pinfo('crawled a vulnerability: %s' % 'CVE-' + item['CVE_id'])
             yield item

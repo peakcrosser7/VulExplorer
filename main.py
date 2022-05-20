@@ -69,12 +69,13 @@ def detect_vuls(handler: DatasetHandler):
                                            global_config.DEFAULT_KEYWORDS)
     try:
         for data in ds:
-            vul_wfdg = gen_wfdg.gen_WFDG_by_json(data['vul_wfdg'])
-            if not vul_wfdg:
-                return
-            fixed_wfdg = gen_wfdg.gen_WFDG_by_json(data['fixed_wfdg'])
-            if not fixed_wfdg:
-                return
+            vul_wfdg = []
+            fixed_wfdg = []
+            for v, f in zip(data['vul_wfdg'], data['fixed_wfdg']):
+                vul_wfdg.append(gen_wfdg.gen_WFDG_by_json(v))
+                fixed_wfdg.append(gen_wfdg.gen_WFDG_by_json(f))
+            if len(vul_wfdg) == 0 or len(fixed_wfdg) == 0:
+                continue
             vul = {
                 'CVE_id': data['CVE_id'],
                 'vul_wfdg': vul_wfdg,
@@ -100,7 +101,7 @@ def detect_vuls(handler: DatasetHandler):
     print('start time: %s    end time: %s    cost time: %s' %
           (my_time.get_time_str(start_time), my_time.get_time_str(end_time),
            my_time.get_time_interval(end_time - start_time)))
-    print('per_cost_time: %s' % detect.get_cmp_time())
+    # print('per_cost_time: %s' % detect.get_cmp_time())
     vul_result = dummy()
     if vul_result:
         print('found vulnerabilities:')
