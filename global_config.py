@@ -1,8 +1,8 @@
 DATASET_DIR = './dataset/'
 OUTPUT_DIR = './output'
 
-DETECT_PATH = '/home/hhy/openssl-1.0.1a/ssl/'
-HEAD_PATH = '/home/hhy/openssl-1.0.1a/'
+DETECT_PATH = '/home/hhy/openssl-1.0.2/ssl/'
+HEAD_PATH = '/home/hhy/openssl-1.0.2/'
 
 DEFAULT_KEYWORDS = {
     "USER_SET", "memcpy", "strcpy", "read", "free", "buf"

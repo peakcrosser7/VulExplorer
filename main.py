@@ -35,8 +35,8 @@ def check_dataset(checked_str: str, handler: DatasetHandler):
 
 
 def dummy():
-    paths = ['/home/hhy/openssl-1.0.2b/ssl/s3_srvr.c', '/home/hhy/openssl-1.0.2b/ssl/s2_srvr.c',
-             '/home/hhy/openssl-1.0.2b/ssl/s3_pkt.c']
+    paths = ['/home/hhy/openssl-1.0.2/ssl/s3_srvr.c', '/home/hhy/openssl-1.0.2/ssl/s2_srvr.c',
+             '/home/hhy/openssl-1.0.2/ssl/s3_pkt.c']
     funcs = ['ssl3_get_client_key_exchange', 'get_client_hello ', 'ssl3_write_bytes']
     ids = ['2015-1787', '2015-3197', '2015-0290']
     res = []
