@@ -1,3 +1,5 @@
+## 通用时间函数
+
 import time
 
 

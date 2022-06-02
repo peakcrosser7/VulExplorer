@@ -1,16 +1,27 @@
 import json
-from typing import List, Set, Optional
+from typing import List, Optional
 
-from genWFDG import wfdg_generator
 from genWFDG.wfdg_generator import WFDG
-from utils.log import pinfo, perr
+
 from genWFDG import config_trans
+from genWFDG import wfdg_generator
+from utils.log import pinfo, perr
 
 DEBUG = True
 
 
 def gen_WFDGs_by_generator(filepath: str, header_list: List[str], dest_func: str = "", not_use_sensitive=False,
                            sensitive_line: int = 0, config_tran: config_trans.ConfigTrans = None) -> list:
+    """
+    利用WFDG生成模块生成WFDG
+    :param filepath: 源文件路径
+    :param header_list: 头文件列表
+    :param dest_func: 目标函数
+    :param not_use_sensitive: 是否使用敏感行
+    :param sensitive_line: 敏感行号
+    :param config_tran: 传递的配置信息
+    :return: 生成的WFDG列表
+    """
     if DEBUG:
         pinfo('generate WFDGs from <%s>' % filepath)
 
@@ -26,6 +37,7 @@ def gen_WFDGs_by_generator(filepath: str, header_list: List[str], dest_func: str
 
 
 def gen_WFDG_by_json(json_str: str) -> Optional[WFDG]:
+    """由JSON字符串生成WFDG"""
     try:
         json_obj = json.loads(json_str)
     except:

@@ -6,22 +6,33 @@ from utils.log import *
 
 
 class DatasetHandler:
+    """数据处理接口"""
+
     def add_to_dataset(self, CVE_id: str, file_paths: list,
                        vul_func: str, sensitive_line: int, keywords: list,
                        vul_wfdg: str, vul_wfdg_no_sen: str, fixed_wfdg: str,
                        affected_vers=None, fixed_vers=None, vul_type: str = ""):
+        """添加到数据集"""
         pass
 
     def finish_dataset(self):
+        """完成数据集添加"""
         pass
 
     def show_dataset(self):
+        """输出数据集信息"""
         pass
 
     def check_dataset(self, checked_set: Set[int]) -> bool:
+        """
+        选中数据
+        :param checked_set: 选中数据的序号
+        :return: 是否操作成功
+        """
         pass
 
     def get_checked_dataset(self, *args):
+        """获取选中的数据"""
         pass
 
 

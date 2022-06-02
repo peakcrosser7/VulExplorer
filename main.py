@@ -13,6 +13,7 @@ from utils.log import *
 
 
 def check_dataset(checked_str: str, handler: DatasetHandler):
+    """选中用于检测的数据集"""
     checked_set = set()
     if checked_str != '-':
         checked_list = checked_str.split(',')
@@ -34,22 +35,6 @@ def check_dataset(checked_str: str, handler: DatasetHandler):
         pinfo('check dataset successfully')
 
 
-def dummy():
-    paths = ['/home/hhy/openssl-1.0.2/ssl/s3_srvr.c', '/home/hhy/openssl-1.0.2/ssl/s2_srvr.c',
-             '/home/hhy/openssl-1.0.2/ssl/s3_pkt.c']
-    funcs = ['ssl3_get_client_key_exchange', 'get_client_hello ', 'ssl3_write_bytes']
-    ids = ['2015-1787', '2015-3197', '2015-0290']
-    res = []
-    for i in range(len(paths)):
-        v = {
-            'file_path': paths[i],
-            'func_name': funcs[i],
-            'CVE_id': ids[i]
-        }
-        res.append(v)
-    return res
-
-
 def save_detect_result(vul_result: list):
     if not os.path.exists(global_config.OUTPUT_DIR):
         os.makedirs(global_config.OUTPUT_DIR)
@@ -59,6 +44,7 @@ def save_detect_result(vul_result: list):
 
 
 def detect_vuls(handler: DatasetHandler):
+    """进行漏洞检测"""
     ds = handler.get_checked_dataset()
     if not ds:
         pwarn('no checked dataset')
@@ -101,7 +87,6 @@ def detect_vuls(handler: DatasetHandler):
           (my_time.get_time_str(start_time), my_time.get_time_str(end_time),
            my_time.get_time_interval(end_time - start_time)))
     print('per_cost_time: %s' % detect.get_cmp_time())
-    vul_result = dummy()
     if vul_result:
         print('found vulnerabilities:')
         print(' %-60s | %-30s | %-15s' % ('        file path', '       function name', 'CVE_id'))
@@ -115,6 +100,7 @@ def detect_vuls(handler: DatasetHandler):
 
 
 def show_config():
+    """输出系统的配置信息"""
     settings = dir(global_config)
     print('\t%-25s | %s' % ('Item', 'Value'))
     for setting in settings:
@@ -123,6 +109,7 @@ def show_config():
 
 
 def set_config(config_item: str, new_value: str):
+    """运行时修改系统的配置"""
     settings = dir(global_config)
     if config_item not in settings:
         perr('the config item does not exist')

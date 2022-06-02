@@ -1,3 +1,5 @@
+## 日志记录函数
+
 P_ERROR = 'ERROR'
 P_WARNING = 'WARN'
 P_DEBUG = 'DEBUG'

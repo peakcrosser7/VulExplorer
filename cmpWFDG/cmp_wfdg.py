@@ -143,6 +143,7 @@ def weight_similarity(node_cnt1: int, node_cnt2: int, node_dis: float, edge_dis:
 
 
 def compare_wfdg(g1: WFDG, g2: WFDG) -> float:
+    """进行两个WFDG的图匹配,返回相似度"""
     node_cnt1 = g1.get_node_cnt()
     node_cnt2 = g2.get_node_cnt()
     if node_cnt1 == 0 or node_cnt2 == 0:

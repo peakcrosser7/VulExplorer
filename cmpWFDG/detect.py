@@ -80,6 +80,7 @@ def cmp_with_dataset(file_path: str, wfdgs: list, dataset: list):
 
 
 def detect_by_cmp(input_path: str, head_path: str, dataset: list, config_tran: config_trans.ConfigTrans = None):
+    """通过图匹配进行漏洞检测"""
     if not os.path.exists(input_path):
         perr('input path:%s does not exist' % input_path)
         return None
@@ -100,6 +101,7 @@ def detect_by_cmp(input_path: str, head_path: str, dataset: list, config_tran: c
             return cmp_with_dataset(input_path, wfdgs, dataset)
 
     vul_result = []
+    # 遍历目录下的所有文件
     for dirpath, _, filenames in os.walk(input_path):
         tmp_header_list = []
         tmp_header_list.extend(header_list)

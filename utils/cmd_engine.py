@@ -8,17 +8,22 @@ from utils.log import *
 
 
 class Cmd:
+    """指令对象"""
+
     def __init__(self, func, args_type: list, desc: str):
-        self.func = func
-        self.args_type = args_type
-        self.desc = desc
+        self.func = func  # 函数
+        self.args_type = args_type  # 指定变量或类型列表
+        self.desc = desc  # 描述
 
 
 class CmdEngine:
+    """命令行处理引擎"""
+
     def __init__(self, logo=''):
-        self._default: Dict[str, Cmd] = {}
-        self._group: Dict[str, Dict[str, Cmd]] = {}
-        self._logo = logo
+        self._default: Dict[str, Cmd] = {}  # 默认命令行参数组
+        self._group: Dict[str, Dict[str, Cmd]] = {}  # 命令行参数分组
+        self._logo = logo  # logo字符串
+        # 转义类型及其函数
         self._trans_types = {
             int: int,
             float: float,
@@ -26,8 +31,10 @@ class CmdEngine:
 
         self.register_func(self._quit_cmdline, [], 'q', desc='quit cmdline')
         self.register_func(self._show_help, [], 'help', desc='show help message')
+        # 注册信号按Ctrl+C退出
         signal.signal(signal.SIGINT, self.sigint_handler)
 
+        # 运行logo
         self._run_logo_func()
 
     def _run_logo_func(self):
@@ -43,6 +50,7 @@ class CmdEngine:
         sys.exit()
 
     def register_group(self, group: str):
+        """注册命令行参数组"""
         if group == '':
             perr('group name should not be empty')
             sys.exit()
@@ -64,6 +72,14 @@ class CmdEngine:
 
     def register_func(self, func, args_type: list, label: str, group: str = '',
                       desc: str = ''):
+        """
+        注册命令行参数
+        :param func: 对应执行函数
+        :param args_type: 类型或指定变量列表
+        :param label: 命令行参数标签
+        :param group: 所属命令行参数组
+        :param desc: 描述
+        """
         if group == '':
             self._register_func(self._default, func, args_type, label, desc)
             return
@@ -113,6 +129,10 @@ class CmdEngine:
         return new_args
 
     def run_func(self, args: List[str]):
+        """
+        运行命令行参数
+        :param args: 命令行参数
+        """
         start = self._check_cmd(args)
         cmd: Cmd
         if start == 1:
