@@ -132,7 +132,7 @@ def set_config(config_item: str, new_value: str):
 
 
 def main():
-    cmd_engine = CmdEngine('VulExplorer v1.0.0 - Graph-based Vulnerability Detection System')
+    cmd_engine = CmdEngine('VulExplorer v1.0.0 - WFDG-based Vulnerability Detection System')
 
     json_handler = DataHandlerFactory.create_handler(DataHandlerFactory.JSON_TYPE)
     json_handler.set_dataset_dir(global_config.DATASET_DIR)
