@@ -1,11 +1,11 @@
 # VulExplorer
 基于加权特征依赖图的C语言源代码漏洞检测系统  
 C language source code vulnerability detection system based on weighted feature dependency graph  
-## 运行环境
+## 环境依赖
 操作系统: 
 * Linux Ubuntu >=18.04  
 
-运行依赖:  
+程序依赖:  
 * clang 9.0.0
 * LLVM
 * Git
