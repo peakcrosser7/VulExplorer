@@ -1,0 +1,3 @@
+[submodule "WFDG-Generator"]
+	path = WFDG-Generator
+	url = git@github.com:VastRock-Huang/WFDG-Generator.git
