@@ -1,0 +1,700 @@
+[
+  {
+    "CVE_id": "2016-2106",
+    "is_manual": 0,
+    "CWE_id": "189",
+    "vul_type": [
+      "DoS",
+      "Overflow",
+      "Mem.",
+      "Corr."
+    ],
+    "file_paths": [
+      "crypto/evp/evp_enc.c"
+    ],
+    "affected_vers": [
+      "1.0.1-1.0.1s",
+      "1.0.2-1.0.2g"
+    ],
+    "fixed_vers": [
+      "1.0.1t",
+      "1.0.2h"
+    ],
+    "vul_func": [
+      "EVP_EncryptUpdate"
+    ],
+    "vul_desc": "Integer overflow in the EVP_EncryptUpdate function in crypto/evp/evp_enc.c in OpenSSL before 1.0.1t and 1.0.2 before 1.0.2h allows remote attackers to cause a denial of service (heap memory corruption) via a large amount of data."
+  },
+  {
+    "CVE_id": "2016-2105",
+    "is_manual": 0,
+    "CWE_id": "189",
+    "vul_type": [
+      "DoS",
+      "Overflow",
+      "Mem.",
+      "Corr."
+    ],
+    "file_paths": [
+      "crypto/evp/encode.c"
+    ],
+    "affected_vers": [],
+    "fixed_vers": [],
+    "vul_func": [
+      "EVP_EncodeUpdate"
+    ],
+    "vul_desc": "Integer overflow in the EVP_EncodeUpdate function in crypto/evp/encode.c in OpenSSL before 1.0.1t and 1.0.2 before 1.0.2h allows remote attackers to cause a denial of service (heap memory corruption) via a large amount of binary data."
+  },
+  {
+    "CVE_id": "2016-2109",
+    "is_manual": 1,
+    "CWE_id": "399",
+    "vul_type": [
+      "DoS"
+    ],
+    "file_paths": [
+      "crypto/asn1/a_d2i_fp.c"
+    ],
+    "affected_vers": [
+      "1.0.1-1.0.1s",
+      "1.0.2-1.0.2g"
+    ],
+    "fixed_vers": [
+      "1.0.1t",
+      "1.0.2h"
+    ],
+    "vul_func": [
+      "asn1_d2i_read_bio"
+    ],
+    "sensitive_line": 170,
+    "keywords": [
+      "BIO","read"
+    ],
+    "vul_desc": "The asn1_d2i_read_bio function in crypto/asn1/a_d2i_fp.c in the ASN.1 BIO implementation in OpenSSL before 1.0.1t and 1.0.2 before 1.0.2h allows remote attackers to cause a denial of service (memory consumption) via a short invalid encoding."
+  },
+  {
+    "CVE_id": "2015-0208",
+    "is_manual": 0,
+    "CWE_id": "",
+    "vul_type": [
+      "DoS"
+    ],
+    "file_paths": [
+      "crypto/rsa/rsa_ameth.c"
+    ],
+    "affected_vers": [],
+    "fixed_vers": [],
+    "vul_func": [
+      "rsa_item_verify"
+    ],
+    "vul_desc": "The ASN.1 signature-verification implementation in the rsa_item_verify function in crypto/rsa/rsa_ameth.c in OpenSSL 1.0.2 before 1.0.2a allows remote attackers to cause a denial of service (NULL pointer dereference and application crash) via crafted RSA PSS parameters to an endpoint that uses the certificate-verification feature."
+  },
+  {
+    "CVE_id": "2015-0286",
+    "is_manual": 0,
+    "CWE_id": "17",
+    "vul_type": [
+      "DoS"
+    ],
+    "file_paths": [
+      "crypto/asn1/a_type.c"
+    ],
+    "affected_vers": [],
+    "fixed_vers": [],
+    "vul_func": [
+      "ASN1_TYPE_cmp"
+    ],
+    "vul_desc": "The ASN1_TYPE_cmp function in crypto/asn1/a_type.c in OpenSSL before 0.9.8zf, 1.0.0 before 1.0.0r, 1.0.1 before 1.0.1m, and 1.0.2 before 1.0.2a does not properly perform boolean-type comparisons, which allows remote attackers to cause a denial of service (invalid read operation and application crash) via a crafted X.509 certificate to an endpoint that uses the certificate-verification feature."
+  },
+  {
+    "CVE_id": "2015-0285",
+    "is_manual": 0,
+    "CWE_id": "310",
+    "vul_type": [],
+    "file_paths": [
+      "ssl/s3_clnt.c"
+    ],
+    "affected_vers": [],
+    "fixed_vers": [],
+    "vul_func": [
+      "ssl3_client_hello"
+    ],
+    "vul_desc": "The ssl3_client_hello function in s3_clnt.c in OpenSSL 1.0.2 before 1.0.2a does not ensure that the PRNG is seeded before proceeding with a handshake, which makes it easier for remote attackers to defeat cryptographic protection mechanisms by sniffing the network and then conducting a brute-force attack."
+  },
+  {
+    "CVE_id": "2015-0207",
+    "is_manual": 0,
+    "CWE_id": "",
+    "vul_type": [
+      "DoS"
+    ],
+    "file_paths": [
+      "ssl/d1_lib.c"
+    ],
+    "affected_vers": [],
+    "fixed_vers": [],
+    "vul_func": [
+      "dtls1_listen"
+    ],
+    "vul_desc": "The dtls1_listen function in d1_lib.c in OpenSSL 1.0.2 before 1.0.2a does not properly isolate the state information of independent data streams, which allows remote attackers to cause a denial of service (application crash) via crafted DTLS traffic, as demonstrated by DTLS 1.0 traffic to a DTLS 1.2 server."
+  },
+  {
+    "CVE_id": "2016-2178",
+    "is_manual": 0,
+    "CWE_id": "200",
+    "vul_type": [
+      "+Info"
+    ],
+    "file_paths": [
+      "crypto/dsa/dsa_ossl.c"
+    ],
+    "affected_vers": [],
+    "fixed_vers": [],
+    "vul_func": [
+      "dsa_sign_setup"
+    ],
+    "vul_desc": "The dsa_sign_setup function in crypto/dsa/dsa_ossl.c in OpenSSL through 1.0.2h does not properly ensure the use of constant-time operations, which makes it easier for local users to discover a DSA private key via a timing side-channel attack."
+  },
+  {
+    "CVE_id": "2016-0799",
+    "is_manual": 0,
+    "CWE_id": "119",
+    "vul_type": [
+      "DoS",
+      "Overflow"
+    ],
+    "file_paths": [
+      "crypto/bio/b_print.c"
+    ],
+    "affected_vers": [],
+    "fixed_vers": [],
+    "vul_func": [
+      "fmtstr"
+    ],
+    "vul_desc": "The fmtstr function in crypto/bio/b_print.c in OpenSSL 1.0.1 before 1.0.1s and 1.0.2 before 1.0.2g improperly calculates string lengths, which allows remote attackers to cause a denial of service (overflow and out-of-bounds read) or possibly have unspecified other impact via a long string, as demonstrated by a large amount of ASN.1 data, a different vulnerability than 2016-2842."
+  },
+  {
+    "CVE_id": "2016-2182",
+    "is_manual": 1,
+    "CWE_id": "787",
+    "vul_type": [
+      "DoS"
+    ],
+    "file_paths": [
+      "crypto/bn/bn_print.c"
+    ],
+    "affected_vers": [
+      "1.0.1-1.0.1t",
+      "1.0.2-1.0.2h"
+    ],
+    "fixed_vers": [
+      "1.0.1u",
+      "1.0.2i"
+    ],
+    "vul_func": [
+      "BN_bn2dec"
+    ],
+    "sensitive_line": 74,
+    "keywords": [
+      "malloc"
+    ],
+    "vul_desc": "The BN_bn2dec function in crypto/bn/bn_print.c in OpenSSL before 1.1.0 does not properly validate division results, which allows remote attackers to cause a denial of service (out-of-bounds write and application crash) or possibly have unspecified other impact via unknown vectors."
+  },
+  {
+    "CVE_id": "2016-2107",
+    "is_manual": 0,
+    "CWE_id": "310",
+    "vul_type": [
+      "+Info"
+    ],
+    "file_paths": [
+      "crypto/evp/e_aes_cbc_hmac_sha1.c",
+      "crypto/evp/e_aes_cbc_hmac_sha256.c"
+    ],
+    "affected_vers": [],
+    "fixed_vers": [],
+    "vul_func": [],
+    "vul_desc": "The AES-NI implementation in OpenSSL before 1.0.1t and 1.0.2 before 1.0.2h does not consider memory allocation during a certain padding check, which allows remote attackers to obtain sensitive cleartext information via a padding-oracle attack against an AES CBC session. NOTE: this vulnerability exists because of an incorrect fix for 2013-0169."
+  },
+  {
+    "CVE_id": "2016-2179",
+    "is_manual": 0,
+    "CWE_id": "399",
+    "vul_type": [
+      "DoS"
+    ],
+    "file_paths": [
+      "ssl/d1_lib.c",
+      "ssl/ssl_locl.h",
+      "ssl/statem/statem_dtls.c",
+      "ssl/statem/statem_lib.c",
+      "ssl/statem/statem_srvr.c"
+    ],
+    "affected_vers": [],
+    "fixed_vers": [],
+    "vul_func": [],
+    "vul_desc": "The DTLS implementation in OpenSSL before 1.1.0 does not properly restrict the lifetime of queue entries associated with unused out-of-order messages, which allows remote attackers to cause a denial of service (memory consumption) by maintaining many crafted DTLS sessions simultaneously, related to d1_lib.c, statem_dtls.c, statem_lib.c, and statem_srvr.c."
+  },
+  {
+    "CVE_id": "2016-2176",
+    "is_manual": 0,
+    "CWE_id": "119",
+    "vul_type": [
+      "DoS",
+      "Overflow",
+      "+Info"
+    ],
+    "file_paths": [
+      "crypto/x509/x509_obj.c"
+    ],
+    "affected_vers": [],
+    "fixed_vers": [],
+    "vul_func": [
+      "X509_NAME_oneline"
+    ],
+    "vul_desc": "The X509_NAME_oneline function in crypto/x509/x509_obj.c in OpenSSL before 1.0.1t and 1.0.2 before 1.0.2h allows remote attackers to obtain sensitive information from process stack memory or cause a denial of service (buffer over-read) via crafted EBCDIC ASN.1 data."
+  },
+  {
+    "CVE_id": "2016-0797",
+    "is_manual": 0,
+    "CWE_id": "",
+    "vul_type": [
+      "DoS",
+      "Overflow",
+      "Mem.",
+      "Corr."
+    ],
+    "file_paths": [
+      "crypto/bn/bn.h",
+      "crypto/bn/bn_print.c"
+    ],
+    "affected_vers": [],
+    "fixed_vers": [],
+    "vul_func": [
+      "BN_hex2bn"
+    ],
+    "vul_desc": "Multiple integer overflows in OpenSSL 1.0.1 before 1.0.1s and 1.0.2 before 1.0.2g allow remote attackers to cause a denial of service (heap memory corruption or NULL pointer dereference) or possibly have unspecified other impact via a long digit string that is mishandled by the (1) BN_dec2bn or (2) BN_hex2bn function, related to crypto/bn/bn.h and crypto/bn/bn_print.c."
+  },
+  {
+    "CVE_id": "2015-0209",
+    "is_manual": 1,
+    "CWE_id": "",
+    "vul_type": [
+      "DoS",
+      "Mem.",
+      "Corr."
+    ],
+    "file_paths": [
+      "crypto/ec/ec_asn1.c"
+    ],
+    "affected_vers": [
+      "0.9.8-0.9.8ze",
+      "1.0.0-1.0.0q",
+      "1.0.1-1.0.1l",
+      "1.0.2"
+    ],
+    "fixed_vers": [
+      "0.9.8zf",
+      "1.0.0r",
+      "1.0.1m",
+      "1.0.2a"
+    ],
+    "vul_func": [
+      "d2i_ECPrivateKey"
+    ],
+    "sensitive_line": 1074,
+    "keywords": [
+      "free"
+    ],
+    "vul_desc": "Use-after-free vulnerability in the d2i_ECPrivateKey function in crypto/ec/ec_asn1.c in OpenSSL before 0.9.8zf, 1.0.0 before 1.0.0r, 1.0.1 before 1.0.1m, and 1.0.2 before 1.0.2a might allow remote attackers to cause a denial of service (memory corruption and application crash) or possibly have unspecified other impact via a malformed Elliptic Curve (EC) private-key file that is improperly handled during import."
+  },
+  {
+    "CVE_id": "2016-2177",
+    "is_manual": 0,
+    "CWE_id": "190",
+    "vul_type": [
+      "DoS",
+      "Overflow"
+    ],
+    "file_paths": [
+      "ssl/s3_srvr.c",
+      "ssl/ssl_sess.c",
+      "ssl/t1_lib.c"
+    ],
+    "affected_vers": [],
+    "fixed_vers": [],
+    "vul_func": [],
+    "vul_desc": "OpenSSL through 1.0.2h incorrectly uses pointer arithmetic for heap-buffer boundary checks, which might allow remote attackers to cause a denial of service (integer overflow and application crash) or possibly have unspecified other impact by leveraging unexpected malloc behavior, related to s3_srvr.c, ssl_sess.c, and t1_lib.c."
+  },
+  {
+    "CVE_id": "2015-0287",
+    "is_manual": 1,
+    "CWE_id": "17",
+    "vul_type": [
+      "DoS",
+      "Mem.",
+      "Corr."
+    ],
+    "file_paths": [
+      "crypto/asn1/tasn_dec.c"
+    ],
+    "affected_vers": [
+      "0.9.8-0.9.8ze",
+      "1.0.0-1.0.0q",
+      "1.0.1-1.0.1l",
+      "1.0.2"
+    ],
+    "fixed_vers": [
+      "0.9.8zf",
+      "1.0.0r",
+      "1.0.1m",
+      "1.0.2a"
+    ],
+    "vul_func": [
+      "ASN1_item_ex_d2i"
+    ],
+    "sensitive_line": 309,
+    "keywords": [
+      "new"
+    ],
+    "vul_desc": "The ASN1_item_ex_d2i function in crypto/asn1/tasn_dec.c in OpenSSL before 0.9.8zf, 1.0.0 before 1.0.0r, 1.0.1 before 1.0.1m, and 1.0.2 before 1.0.2a does not reinitialize CHOICE and ADB data structures, which might allow attackers to cause a denial of service (invalid write operation and memory corruption) by leveraging an application that relies on ASN.1 structure reuse."
+  },
+  {
+    "CVE_id": "2016-0798",
+    "is_manual": 0,
+    "CWE_id": "399",
+    "vul_type": [
+      "DoS"
+    ],
+    "file_paths": [
+      "CHANGES",
+      "apps/s_server.c",
+      "crypto/srp/srp.h",
+      "crypto/srp/srp_vfy.c",
+      "util/libeay.num"
+    ],
+    "affected_vers": [],
+    "fixed_vers": [],
+    "vul_func": [],
+    "vul_desc": "Memory leak in the SRP_VBASE_get_by_user implementation in OpenSSL 1.0.1 before 1.0.1s and 1.0.2 before 1.0.2g allows remote attackers to cause a denial of service (memory consumption) by providing an invalid username in a connection attempt, related to apps/s_server.c and crypto/srp/srp_vfy.c."
+  },
+  {
+    "CVE_id": "2015-0292",
+    "is_manual": 0,
+    "CWE_id": "119",
+    "vul_type": [
+      "DoS",
+      "Overflow",
+      "Mem.",
+      "Corr."
+    ],
+    "file_paths": [
+      "crypto/evp/encode.c"
+    ],
+    "affected_vers": [
+      "0.9.8-0.9.8z",
+      "1.0.0-1.0.0l",
+      "1.0.1-1.0.1g"
+    ],
+    "fixed_vers": [
+      "0.9.8za",
+      "1.0.0m",
+      "1.0.1h"
+    ],
+    "vul_func": [
+      "EVP_DecodeUpdate"
+    ],
+    "vul_desc": "Integer underflow in the EVP_DecodeUpdate function in crypto/evp/encode.c in the base64-decoding implementation in OpenSSL before 0.9.8za, 1.0.0 before 1.0.0m, and 1.0.1 before 1.0.1h allows remote attackers to cause a denial of service (memory corruption) or possibly have unspecified other impact via crafted base64 data that triggers a buffer overflow."
+  },
+  {
+    "CVE_id": "2015-1787",
+    "is_manual": 1,
+    "CWE_id": "20",
+    "vul_type": [
+      "DoS"
+    ],
+    "file_paths": [
+      "ssl/s3_srvr.c"
+    ],
+    "affected_vers": [
+      "1.0.2"
+    ],
+    "fixed_vers": [
+      "1.0.2a"
+    ],
+    "vul_func": [
+      "ssl3_get_client_key_exchange"
+    ],
+    "sensitive_line": 2254,
+    "keywords": [],
+    "vul_desc": "The ssl3_get_client_key_exchange function in s3_srvr.c in OpenSSL 1.0.2 before 1.0.2a, when client authentication and an ephemeral Diffie-Hellman ciphersuite are enabled, allows remote attackers to cause a denial of service (daemon crash) via a ClientKeyExchange message with a length of zero."
+  },
+  {
+    "CVE_id": "2015-0291",
+    "is_manual": 0,
+    "CWE_id": "",
+    "vul_type": [
+      "DoS"
+    ],
+    "file_paths": [
+      "ssl/t1_lib.c"
+    ],
+    "affected_vers": [],
+    "fixed_vers": [],
+    "vul_func": [],
+    "vul_desc": "The sigalgs implementation in t1_lib.c in OpenSSL 1.0.2 before 1.0.2a allows remote attackers to cause a denial of service (NULL pointer dereference and daemon crash) by using an invalid signature_algorithms extension in the ClientHello message during a renegotiation."
+  },
+  {
+    "CVE_id": "2015-3197",
+    "is_manual": 1,
+    "CWE_id": "310",
+    "vul_type": [],
+    "file_paths": [
+      "ssl/s2_srvr.c"
+    ],
+    "affected_vers": [
+      "1.0.1-1.0.1q",
+      "1.0.2-1.0.2e"
+    ],
+    "fixed_vers": [
+      "1.0.1r",
+      "1.0.2f"
+    ],
+    "vul_func": [
+      "get_client_hello"
+    ],
+    "sensitive_line": 696,
+    "keywords": [],
+    "vul_desc": "ssl/s2_srvr.c in OpenSSL 1.0.1 before 1.0.1r and 1.0.2 before 1.0.2f does not prevent use of disabled ciphers, which makes it easier for man-in-the-middle attackers to defeat cryptographic protection mechanisms by performing computations on SSLv2 traffic, related to the get_client_master_key and get_client_hello functions."
+  },
+  {
+    "CVE_id": "2015-3194",
+    "is_manual": 0,
+    "CWE_id": "",
+    "vul_type": [
+      "DoS"
+    ],
+    "file_paths": [
+      "crypto/rsa/rsa_ameth.c"
+    ],
+    "affected_vers": [],
+    "fixed_vers": [],
+    "vul_func": [
+      "generation"
+    ],
+    "vul_desc": "crypto/rsa/rsa_ameth.c in OpenSSL 1.0.1 before 1.0.1q and 1.0.2 before 1.0.2e allows remote attackers to cause a denial of service (NULL pointer dereference and application crash) via an RSA PSS ASN.1 signature that lacks a mask generation function parameter."
+  },
+  {
+    "CVE_id": "2015-0293",
+    "is_manual": 0,
+    "CWE_id": "20",
+    "vul_type": [
+      "DoS"
+    ],
+    "file_paths": [
+      "ssl/s2_lib.c",
+      "ssl/s2_srvr.c"
+    ],
+    "affected_vers": [],
+    "fixed_vers": [],
+    "vul_func": [],
+    "vul_desc": "The SSLv2 implementation in OpenSSL before 0.9.8zf, 1.0.0 before 1.0.0r, 1.0.1 before 1.0.1m, and 1.0.2 before 1.0.2a allows remote attackers to cause a denial of service (s2_lib.c assertion failure and daemon exit) via a crafted CLIENT-MASTER-KEY message."
+  },
+  {
+    "CVE_id": "2015-3193",
+    "is_manual": 0,
+    "CWE_id": "200",
+    "vul_type": [
+      "+Info"
+    ],
+    "file_paths": [
+      "crypto/bn/asm/x86_64-mont5.pl",
+      "crypto/bn/bntest.c"
+    ],
+    "affected_vers": [],
+    "fixed_vers": [],
+    "vul_func": [
+      "BN_mod_exp"
+    ],
+    "vul_desc": "The Montgomery squaring implementation in crypto/bn/asm/x86_64-mont5.pl in OpenSSL 1.0.2 before 1.0.2e on the x86_64 platform, as used by the BN_mod_exp function, mishandles carry propagation and produces incorrect output, which makes it easier for remote attackers to obtain sensitive private-key information via an attack against use of a (1) Diffie-Hellman (DH) or (2) Diffie-Hellman Ephemeral (DHE) ciphersuite."
+  },
+  {
+    "CVE_id": "2015-0288",
+    "is_manual": 0,
+    "CWE_id": "",
+    "vul_type": [
+      "DoS"
+    ],
+    "file_paths": [
+      "crypto/x509/x509_req.c"
+    ],
+    "affected_vers": [],
+    "fixed_vers": [],
+    "vul_func": [
+      "X509_to_X509_REQ"
+    ],
+    "vul_desc": "The X509_to_X509_REQ function in crypto/x509/x509_req.c in OpenSSL before 0.9.8zf, 1.0.0 before 1.0.0r, 1.0.1 before 1.0.1m, and 1.0.2 before 1.0.2a might allow attackers to cause a denial of service (NULL pointer dereference and application crash) via an invalid certificate key."
+  },
+  {
+    "CVE_id": "2015-0290",
+    "is_manual": 1,
+    "CWE_id": "17",
+    "vul_type": [
+      "DoS"
+    ],
+    "file_paths": [
+      "ssl/s3_pkt.c"
+    ],
+    "affected_vers": [
+      "1.0.2"
+    ],
+    "fixed_vers": [
+      "1.0.2a"
+    ],
+    "vul_func": [
+      "ssl3_write_bytes"
+    ],
+    "sensitive_line": 786,
+    "keywords": [
+      "write","buf"
+    ],
+    "vul_desc": "The multi-block feature in the ssl3_write_bytes function in s3_pkt.c in OpenSSL 1.0.2 before 1.0.2a on 64-bit x86 platforms with AES NI support does not properly handle certain non-blocking I/O cases, which allows remote attackers to cause a denial of service (pointer corruption and application crash) via unspecified vectors."
+  },
+  {
+    "CVE_id": "2015-3196",
+    "is_manual": 0,
+    "CWE_id": "362",
+    "vul_type": [
+      "DoS"
+    ],
+    "file_paths": [
+      "ssl/s3_clnt.c",
+      "ssl/s3_srvr.c"
+    ],
+    "affected_vers": [],
+    "fixed_vers": [],
+    "vul_func": [],
+    "vul_desc": "ssl/s3_clnt.c in OpenSSL 1.0.0 before 1.0.0t, 1.0.1 before 1.0.1p, and 1.0.2 before 1.0.2d, when used for a multi-threaded client, writes the PSK identity hint to an incorrect data structure, which allows remote servers to cause a denial of service (race condition and double free) via a crafted ServerKeyExchange message."
+  },
+  {
+    "CVE_id": "2015-0289",
+    "is_manual": 0,
+    "CWE_id": "",
+    "vul_type": [
+      "DoS"
+    ],
+    "file_paths": [
+      "crypto/pkcs7/pk7_doit.c",
+      "crypto/pkcs7/pk7_lib.c"
+    ],
+    "affected_vers": [],
+    "fixed_vers": [],
+    "vul_func": [],
+    "vul_desc": "The PKCS#7 implementation in OpenSSL before 0.9.8zf, 1.0.0 before 1.0.0r, 1.0.1 before 1.0.1m, and 1.0.2 before 1.0.2a does not properly handle a lack of outer ContentInfo, which allows attackers to cause a denial of service (NULL pointer dereference and application crash) by leveraging an application that processes arbitrary PKCS#7 data and providing malformed data with ASN.1 encoding, related to crypto/pkcs7/pk7_doit.c and crypto/pkcs7/pk7_lib.c."
+  },
+  {
+    "CVE_id": "2015-1793",
+    "is_manual": 0,
+    "CWE_id": "254",
+    "vul_type": [],
+    "file_paths": [
+      "crypto/x509/x509_vfy.c"
+    ],
+    "affected_vers": [],
+    "fixed_vers": [],
+    "vul_func": [
+      "X509_verify_cert"
+    ],
+    "vul_desc": "The X509_verify_cert function in crypto/x509/x509_vfy.c in OpenSSL 1.0.1n, 1.0.1o, 1.0.2b, and 1.0.2c does not properly process X.509 Basic Constraints cA values during identification of alternative certificate chains, which allows remote attackers to spoof a Certification Authority role and trigger unintended certificate verifications via a valid leaf certificate."
+  },
+  {
+    "CVE_id": "2016-0703",
+    "is_manual": 0,
+    "CWE_id": "200",
+    "vul_type": [
+      "+Info"
+    ],
+    "file_paths": [
+      "ssl/s2_srvr.c"
+    ],
+    "affected_vers": [],
+    "fixed_vers": [],
+    "vul_func": [
+      "get_client_master_key"
+    ],
+    "vul_desc": "The get_client_master_key function in s2_srvr.c in the SSLv2 implementation in OpenSSL before 0.9.8zf, 1.0.0 before 1.0.0r, 1.0.1 before 1.0.1m, and 1.0.2 before 1.0.2a accepts a nonzero CLIENT-MASTER-KEY CLEAR-KEY-LENGTH value for an arbitrary cipher, which allows man-in-the-middle attackers to determine the MASTER-KEY value and decrypt TLS ciphertext data by leveraging a Bleichenbacher RSA padding oracle, a related issue to 2016-0800."
+  },
+  {
+    "CVE_id": "2016-0702",
+    "is_manual": 0,
+    "CWE_id": "200",
+    "vul_type": [
+      "+Info"
+    ],
+    "file_paths": [
+      "crypto/bn/bn_exp.c"
+    ],
+    "affected_vers": [],
+    "fixed_vers": [],
+    "vul_func": [
+      "MOD_EXP_CTIME_COPY_FROM_PREBUF"
+    ],
+    "vul_desc": "The MOD_EXP_CTIME_COPY_FROM_PREBUF function in crypto/bn/bn_exp.c in OpenSSL 1.0.1 before 1.0.1s and 1.0.2 before 1.0.2g does not properly consider cache-bank access times during modular exponentiation, which makes it easier for local users to discover RSA keys by running a crafted application on the same Intel Sandy Bridge CPU core as a victim and leveraging cache-bank conflicts, aka a \"CacheBleed\" attack."
+  },
+  {
+    "CVE_id": "2016-0705",
+    "is_manual": 0,
+    "CWE_id": "",
+    "vul_type": [
+      "DoS",
+      "Mem.",
+      "Corr."
+    ],
+    "file_paths": [
+      "crypto/dsa/dsa_ameth.c"
+    ],
+    "affected_vers": [],
+    "fixed_vers": [],
+    "vul_func": [
+      "dsa_priv_decode"
+    ],
+    "vul_desc": "Double free vulnerability in the dsa_priv_decode function in crypto/dsa/dsa_ameth.c in OpenSSL 1.0.1 before 1.0.1s and 1.0.2 before 1.0.2g allows remote attackers to cause a denial of service (memory corruption) or possibly have unspecified other impact via a malformed DSA private key."
+  },
+  {
+    "CVE_id": "2016-0701",
+    "is_manual": 0,
+    "CWE_id": "200",
+    "vul_type": [
+      "+Info"
+    ],
+    "file_paths": [
+      "crypto/dh/dh.h",
+      "crypto/dh/dh_check.c"
+    ],
+    "affected_vers": [],
+    "fixed_vers": [],
+    "vul_func": [
+      "DH_check_pub_key"
+    ],
+    "vul_desc": "The DH_check_pub_key function in crypto/dh/dh_check.c in OpenSSL 1.0.2 before 1.0.2f does not ensure that prime numbers are appropriate for Diffie-Hellman (DH) key exchange, which makes it easier for remote attackers to discover a private DH exponent by making multiple handshakes with a peer that chose an inappropriate number, as demonstrated by a number in an X9.42 file."
+  },
+  {
+    "CVE_id": "2016-2181",
+    "is_manual": 0,
+    "CWE_id": "189",
+    "vul_type": [
+      "DoS"
+    ],
+    "file_paths": [
+      "include/openssl/ssl.h",
+      "ssl/record/rec_layer_d1.c",
+      "ssl/record/record_locl.h",
+      "ssl/record/ssl3_record.c",
+      "ssl/ssl_err.c"
+    ],
+    "affected_vers": [],
+    "fixed_vers": [],
+    "vul_func": [],
+    "vul_desc": "The Anti-Replay feature in the DTLS implementation in OpenSSL before 1.1.0 mishandles early use of a new epoch number in conjunction with a large sequence number, which allows remote attackers to cause a denial of service (false-positive packet drops) via spoofed DTLS records, related to rec_layer_d1.c and ssl3_record.c."
+  }
+]
