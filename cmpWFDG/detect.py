@@ -74,8 +74,6 @@ def cmp_with_dataset(file_path: str, wfdgs: list, dataset: list):
                     }
                     checked_funcs.add(wfdg.get_func_name())
                     vul_result.append(vul)
-                    pinfo('find vul(CVE_id: %s) in path:%s func:%s' %
-                          (vul['CVE_id'], file_path, vul['func_name']))
     return vul_result
 
 
